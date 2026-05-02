@@ -128,16 +128,12 @@
       box-shadow: 0 24px 70px rgba(31, 41, 51, 0.08);
     }
 
-    .portrait-placeholder {
+    .portrait-card img {
+      width: 100%;
       aspect-ratio: 1;
-      border-radius: 22px;
-      background: linear-gradient(135deg, #ece7ff, #fff3d4);
-      display: grid;
-      place-items: center;
-      text-align: center;
-      color: #52606d;
-      padding: 2rem;
-      font-weight: 700;
+      border-radius: 20px;
+      object-fit: cover;
+      display: block;
     }
 
     section {
@@ -204,11 +200,12 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 260px;
+      min-height: 300px;
     }
 
     .project-links {
       display: flex;
+      flex-wrap: wrap;
       gap: 1rem;
       margin-top: 1.25rem;
       font-weight: 700;
@@ -293,11 +290,11 @@
         <div class="button-row">
           <a class="button primary" href="#projects">View Projects</a>
           <a class="button" href="resume.pdf" target="_blank">Resume</a>
-          <a class="button" href="https://github.com/YOUR-USERNAME" target="_blank">GitHub</a>
+          <a class="button" href="https://github.com/daphnettsai-png" target="_blank">GitHub</a>
         </div>
       </div>
       <div class="portrait-card">
-        <img src="profile.jpg" alt="Daphne" style="width:100%; border-radius:20px; object-fit:cover;">
+        <img src="profile.jpg" alt="Daphne Tsai">
       </div>
     </section>
 
@@ -330,53 +327,55 @@
       </div>
     </section>
 
-<section id="projects">
-  <div class="container">
-    <h2 class="section-title">Projects</h2>
-    <p class="section-intro">
-      Projects that show how I approach technical writing, product design, and real-world problem solving.
-    </p>
+    <section id="projects">
+      <div class="container">
+        <h2 class="section-title">Projects</h2>
+        <p class="section-intro">
+          Projects that show how I approach technical writing, product design, and real-world problem solving.
+        </p>
 
-    <div class="project-grid">
-      <article class="project-card">
-        <div>
-          <h3>Disaster Care Access App</h3>
-          <p class="muted">
-            Designed a community-driven healthcare app to help users find reliable clinic access during disasters, especially for non-emergency medical needs. Focused on transparency, crowdsourcing, and privacy-aware data sharing.
-          </p>
-          <div class="tag-row">
-            <span class="tag">Product</span>
-            <span class="tag">UX</span>
-            <span class="tag">Healthcare</span>
-          </div>
-        </div>
-        <div class="project-links">
-          <a href="https://github.com/daphnettsai-png/lions-med-app" target="_blank">Project →</a>
-        </div>
-      </article>
+        <div class="project-grid">
+          <article class="project-card">
+            <div>
+              <h3>Lions-Med Disaster Care App</h3>
+              <p class="muted">
+                Designed a community-driven healthcare app to help users find reliable clinic access during disasters, especially for non-emergency medical needs. The full page includes the problem, use case, ideation process, prototype, and video pitch.
+              </p>
+              <div class="tag-row">
+                <span class="tag">Product</span>
+                <span class="tag">UX</span>
+                <span class="tag">Healthcare</span>
+                <span class="tag">Prototype</span>
+              </div>
+            </div>
+            <div class="project-links">
+              <a href="lions.html">Read Case Study →</a>
+              <a href="lions-prototype.html" target="_blank">Open Prototype →</a>
+            </div>
+          </article>
 
-      <article class="project-card">
-        <div>
-          <h3>Privacy Decision Tool</h3>
-          <p class="muted">
-            Designed a decision-tree framework to help engineers choose between privacy-preserving technologies such as differential privacy, anonymization, cryptography, and trusted execution environments (TEEs). Focused on balancing usability, security guarantees, and real-world deployment constraints.
-          </p>
-          <div class="tag-row">
-            <span class="tag">Privacy</span>
-            <span class="tag">Technical Writing</span>
-            <span class="tag">Decision Trees</span>
-          </div>
+          <article class="project-card">
+            <div>
+              <h3>Privacy Decision Tool</h3>
+              <p class="muted">
+                Designed a decision-tree framework to help engineers choose between privacy-preserving technologies such as differential privacy, anonymization, cryptography, and trusted execution environments. The full page includes documentation, use cases, and an interactive quiz.
+              </p>
+              <div class="tag-row">
+                <span class="tag">Privacy</span>
+                <span class="tag">Technical Writing</span>
+                <span class="tag">Decision Trees</span>
+                <span class="tag">Interactive Tool</span>
+              </div>
+            </div>
+            <div class="project-links">
+              <a href="privacy.html">Read Documentation →</a>
+              <a href="privacy-quiz.html" target="_blank">Open Quiz →</a>
+            </div>
+          </article>
         </div>
-        <div class="project-links">
-          <a href="https://github.com/daphnettsai-png/privacy-decision-tool" target="_blank">Code →</a>
-          <a href="#">Case Study →</a>
-        </div>
-      </article>
-    </div>
-  </div>
-</section>
+      </div>
+    </section>
 
-    
     <section id="experience">
       <div class="container">
         <h2 class="section-title">Experience</h2>
@@ -414,11 +413,8 @@
             <p>I’m interested in product, data, healthcare, privacy, and projects that make complicated systems easier for people to use.</p>
           </div>
           <div class="button-row">
-  <a class="button" href="mailto:dtt2115@columbia.edu">Email Me</a>
-  <a class="button" href="https://www.linkedin.com/in/daphne-tsai-003978328" target="_blank">LinkedIn</a>
-</div>
-
-
+            <a class="button" href="mailto:dtt2115@columbia.edu">Email Me</a>
+            <a class="button" href="https://www.linkedin.com/in/daphne-tsai-003978328" target="_blank">LinkedIn</a>
           </div>
         </div>
       </div>
