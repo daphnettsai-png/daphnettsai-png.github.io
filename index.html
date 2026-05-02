@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daphne Tsai | Portfolio</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fbfaf7;
+      color: #1f2933;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1100px, 90%);
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(251, 250, 247, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e5e0d8;
+    }
+
+    nav {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover {
+      color: #7c5cff;
+    }
+
+    .hero {
+      min-height: 82vh;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: center;
+      gap: 3rem;
+      padding: 5rem 0;
+    }
+
+    .eyebrow {
+      color: #7c5cff;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: clamp(2.7rem, 6vw, 5rem);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      max-width: 650px;
+      color: #52606d;
+      margin-bottom: 2rem;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 0.85rem 1.15rem;
+      border-radius: 999px;
+      border: 1px solid #1f2933;
+      font-weight: 700;
+      transition: 0.2s ease;
+    }
+
+    .button.primary {
+      background: #1f2933;
+      color: white;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .portrait-card {
+      background: white;
+      border: 1px solid #e5e0d8;
+      border-radius: 28px;
+      padding: 1.25rem;
+      box-shadow: 0 24px 70px rgba(31, 41, 51, 0.08);
+    }
+
+    .portrait-placeholder {
+      aspect-ratio: 1;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #ece7ff, #fff3d4);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: #52606d;
+      padding: 2rem;
+      font-weight: 700;
+    }
+
+    section {
+      padding: 5rem 0;
+      border-top: 1px solid #e5e0d8;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-intro {
+      max-width: 720px;
+      color: #52606d;
+      margin-bottom: 2.5rem;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .info-card, .project-card, .experience-card {
+      background: white;
+      border: 1px solid #e5e0d8;
+      border-radius: 22px;
+      padding: 1.5rem;
+      box-shadow: 0 12px 34px rgba(31, 41, 51, 0.05);
+    }
+
+    .info-card h3, .project-card h3, .experience-card h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    .muted {
+      color: #52606d;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .tag {
+      font-size: 0.78rem;
+      padding: 0.35rem 0.6rem;
+      border-radius: 999px;
+      background: #f1eefb;
+      color: #5b46c7;
+      font-weight: 700;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    .project-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 260px;
+    }
+
+    .project-links {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.25rem;
+      font-weight: 700;
+      color: #7c5cff;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .experience-card {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 1rem;
+    }
+
+    .contact-box {
+      background: #1f2933;
+      color: white;
+      border-radius: 28px;
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-box p {
+      color: #d9e2ec;
+      max-width: 650px;
+      margin-top: 0.5rem;
+    }
+
+    .contact-box .button {
+      border-color: white;
+      background: white;
+      color: #1f2933;
+    }
+
+    footer {
+      padding: 2rem 0;
+      text-align: center;
+      color: #52606d;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 800px) {
+      .hero, .about-grid, .project-grid, .experience-card {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="container">
+      <a href="#top" class="logo">Daphne Tsai</a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#experience">Experience</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero container">
+      <div>
+        <p class="eyebrow">Operations Research · Data · Product</p>
+        <h1>Hi, I’m Daphne.</h1>
+        <p>
+          I’m an Operations Research student at Columbia interested in data-driven product strategy,
+          user-centered design, and building tools that make complex systems easier to understand.
+        </p>
+        <div class="button-row">
+          <a class="button primary" href="#projects">View Projects</a>
+          <a class="button" href="resume.pdf" target="_blank">Resume</a>
+          <a class="button" href="https://github.com/YOUR-USERNAME" target="_blank">GitHub</a>
+        </div>
+      </div>
+      <div class="portrait-card">
+        <div class="portrait-placeholder">
+          Replace this with your photo or a simple graphic
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <h2 class="section-title">About</h2>
+        <p class="section-intro">
+          I like working at the intersection of analytics, people, and product. My projects usually combine
+          quantitative methods with clear communication so the final output is useful, understandable, and actionable.
+        </p>
+        <div class="about-grid">
+          <div class="info-card">
+            <h3>Education</h3>
+            <p class="muted">Columbia University, SEAS</p>
+            <p>Operations Research: Engineering Management Systems</p>
+            <p>Minor in Psychology</p>
+          </div>
+          <div class="info-card">
+            <h3>Skills</h3>
+            <p class="muted">Python, pandas, SQL, data visualization, A/B testing, regression, product thinking, privacy technology research.</p>
+            <div class="tag-row">
+              <span class="tag">Python</span>
+              <span class="tag">SQL</span>
+              <span class="tag">pandas</span>
+              <span class="tag">Product</span>
+              <span class="tag">Privacy</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="container">
+        <h2 class="section-title">Projects</h2>
+        <p class="section-intro">
+          A few projects that show how I approach data analysis, technical writing, and product-oriented problem solving.
+        </p>
+
+        <div class="project-grid">
+          <article class="project-card">
+            <div>
+              <h3>Cookie Cats A/B Test</h3>
+              <p class="muted">
+                Used bootstrap hypothesis testing to evaluate whether a game design change improved player retention.
+              </p>
+              <div class="tag-row">
+                <span class="tag">Python</span>
+                <span class="tag">Bootstrap</span>
+                <span class="tag">A/B Testing</span>
+              </div>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/YOUR-USERNAME/cookie-cats-ab-test" target="_blank">Code →</a>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div>
+              <h3>Customer Order Gap Analysis</h3>
+              <p class="muted">
+                Built SQL reports using window functions to measure time gaps between repeat customer orders.
+              </p>
+              <div class="tag-row">
+                <span class="tag">SQL</span>
+                <span class="tag">Window Functions</span>
+                <span class="tag">Analytics</span>
+              </div>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/YOUR-USERNAME/customer-order-analysis" target="_blank">Code →</a>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div>
+              <h3>Privacy Decision Tool</h3>
+              <p class="muted">
+                Designed a decision-tree tool to help engineers choose between privacy technologies like differential privacy, cryptography, anonymization, and TEEs.
+              </p>
+              <div class="tag-row">
+                <span class="tag">Privacy</span>
+                <span class="tag">Technical Writing</span>
+                <span class="tag">Decision Trees</span>
+              </div>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/YOUR-USERNAME/privacy-decision-tool" target="_blank">Code →</a>
+              <a href="#">Case Study →</a>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div>
+              <h3>Disaster Care Access App</h3>
+              <p class="muted">
+                Product concept for helping people in the medical grey-zone find reliable clinic information during disasters using community updates and verification.
+              </p>
+              <div class="tag-row">
+                <span class="tag">Product</span>
+                <span class="tag">UX</span>
+                <span class="tag">Healthcare</span>
+              </div>
+            </div>
+            <div class="project-links">
+              <a href="https://github.com/YOUR-USERNAME/disaster-care-app" target="_blank">Project →</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience">
+      <div class="container">
+        <h2 class="section-title">Experience</h2>
+        <div class="timeline">
+          <div class="experience-card">
+            <p class="muted">Summer 2026</p>
+            <div>
+              <h3>GE HealthCare Intern</h3>
+              <p class="muted">Working on healthcare-related projects while building experience in technical communication, analytics, and product-adjacent problem solving.</p>
+            </div>
+          </div>
+          <div class="experience-card">
+            <p class="muted">Current</p>
+            <div>
+              <h3>Social Media / Marketing Manager, Lita Trading</h3>
+              <p class="muted">Create short-form content and analyze engagement patterns to improve digital marketing strategy.</p>
+            </div>
+          </div>
+          <div class="experience-card">
+            <p class="muted">Leadership</p>
+            <div>
+              <h3>President, East Wind West Wind</h3>
+              <p class="muted">Organized large-scale cultural events and coordinated performers, stage managers, technical logistics, and communication.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <div class="contact-box">
+          <div>
+            <h2>Let’s connect</h2>
+            <p>I’m interested in product, data, healthcare, privacy, and projects that make complicated systems easier for people to use.</p>
+          </div>
+          <div class="button-row">
+            <a class="button" href="mailto:your.email@example.com">Email Me</a>
+            <a class="button" href="https://www.linkedin.com/in/YOUR-LINKEDIN" target="_blank">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Daphne Tsai. Built with HTML/CSS and hosted on GitHub Pages.</p>
+  </footer>
+</body>
+</html>
