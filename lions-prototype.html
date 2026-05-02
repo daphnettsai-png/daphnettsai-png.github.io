@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Lions-Med Crowd</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --navy:#0a2050;--nm:#1a3a6e;--nl:#e8eef8;
+  --red:#dc2626;--grn:#059669;--amb:#d97706;--acc:#2563eb;
+  --sf:#f6f8fc;--bd:#e2ecf5;--tx:#0d1b2e;--mu:#7a8fa8;
+  --sh:0 1px 8px rgba(10,32,80,.07),0 4px 16px rgba(10,32,80,.04)
+}
+body{background:#d8e4f0;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'DM Sans',-apple-system,sans-serif}
+.device{width:390px;height:844px;background:var(--sf);border-radius:52px;overflow:hidden;position:relative;box-shadow:0 0 0 10px #111827,0 50px 100px rgba(0,0,0,.5)}
+.island{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:118px;height:34px;background:#000;border-radius:20px;z-index:200}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{display:none}
+
+/* ── SHARED HEADER ── */
+.hdr{background:var(--navy);padding:56px 20px 18px;flex-shrink:0}
+.hdr-row{display:flex;justify-content:space-between;align-items:flex-end}
+.hdr-title{font-size:26px;font-weight:700;color:#fff}
+.hdr-sub{font-size:13px;color:rgba(255,255,255,.55);margin-top:4px}
+.hdr-pill{font-size:12px;font-weight:600;color:rgba(255,255,255,.7);background:rgba(255,255,255,.1);padding:5px 12px;border-radius:20px;white-space:nowrap}
+.sb-row{display:flex;justify-content:space-between;align-items:center;padding:0 20px;padding-top:58px;flex-shrink:0}
+.sb-row.inHdr{padding-top:0;margin-bottom:12px}
+.st{font-size:15px;font-weight:600;color:#fff}
+.si{display:flex;align-items:center;gap:6px}
+
+/* ── TAB BAR ── */
+.tabbar{height:80px;background:rgba(255,255,255,.96);border-top:.5px solid var(--bd);display:flex;align-items:flex-start;padding-top:10px;flex-shrink:0;backdrop-filter:blur(20px)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:2px 0}
+.tl{font-size:10px;font-weight:500;color:var(--mu)}
+.tab.on .tl{color:var(--navy);font-weight:600}
+.tpw{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding-top:2px}
+.tpb{width:50px;height:50px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:-16px;box-shadow:0 4px 20px rgba(10,32,80,.35)}
+.tpl{font-size:10px;font-weight:500;color:var(--mu);margin-top:2px}
+.tpw.on .tpl{color:var(--navy);font-weight:600}
+
+/* ── CARDS ── */
+.card{background:#fff;border-radius:18px;border:.5px solid var(--bd);box-shadow:var(--sh)}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);padding:18px 20px 8px}
+
+/* ════ MAPS ════ */
+.map-wrap{position:relative;flex-shrink:0}
+.map-hdr{background:var(--navy);padding-bottom:0}
+.map-sb{display:flex;justify-content:space-between;align-items:center;padding:58px 20px 12px}
+.map-search{background:rgba(255,255,255,.95);border-radius:14px;margin:0 14px 14px;padding:11px 14px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(10,32,80,.1)}
+.map-st{font-size:14px;color:var(--mu);flex:1}
+.map-legend{display:flex;gap:14px;padding:0 16px 12px;background:var(--navy)}
+.ml-item{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.7)}
+.ml-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.map-svg-area{height:236px;overflow:hidden;flex-shrink:0}
+
+.cr{display:flex;align-items:center;gap:14px;background:#fff;border-radius:16px;border:.5px solid var(--bd);padding:14px 16px;margin-bottom:10px;cursor:pointer;box-shadow:var(--sh);transition:transform .13s}
+.cr:active{transform:scale(.98)}
+.ci{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cb{flex:1;min-width:0}
+.cn{font-size:15px;font-weight:700;color:var(--tx)}
+.cm{font-size:12px;color:var(--mu);margin-top:3px}
+.cts{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.ct{font-size:11px;font-weight:500;padding:3px 8px;border-radius:20px}
+.cb1{background:var(--nl);color:var(--navy)}
+.cr1{background:#fee2e2;color:#991b1b}
+.cg1{background:#d1fae5;color:#065f46}
+.cdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* Overlay */
+.overlay{position:absolute;inset:0;background:var(--sf);z-index:80;display:none;flex-direction:column;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1)}
+.overlay.open{display:flex;transform:translateY(0)}
+.ovhd{background:var(--navy);padding:56px 20px 22px;flex-shrink:0}
+.ovbk{display:flex;align-items:center;gap:5px;color:rgba(255,255,255,.6);font-size:13px;cursor:pointer;margin-bottom:14px}
+.ovnm{font-size:24px;font-weight:700;color:#fff}
+.ovsb{font-size:13px;color:rgba(255,255,255,.55);margin-top:4px}
+.ovps{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.ovp{font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px}
+.ovg{background:rgba(16,185,129,.2);color:#6ee7b7}
+.ovy{background:rgba(251,191,36,.18);color:#fcd34d}
+.ovw{background:rgba(255,255,255,.12);color:rgba(255,255,255,.7)}
+.prl{padding:4px 20px 20px}
+.pll{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);padding:16px 0 10px}
+.pri{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:.5px solid var(--bd)}
+.pri:last-child{border-bottom:none}
+.prn{font-size:14px;font-weight:500;color:var(--tx)}
+.prt{font-size:11px;color:var(--mu);margin-top:3px}
+.pra{font-size:18px;font-weight:700;color:var(--navy)}
+.prana{color:var(--red);font-size:14px}
+
+/* ════ COMMUNITY ════ */
+.fscr{display:flex;gap:7px;padding:12px 14px;overflow-x:auto;flex-shrink:0;background:#fff;border-bottom:.5px solid var(--bd)}
+.fscr::-webkit-scrollbar{display:none}
+.fc{font-size:13px;font-weight:500;padding:7px 15px;border-radius:20px;border:.5px solid var(--bd);color:var(--mu);background:var(--sf);white-space:nowrap;cursor:pointer;flex-shrink:0}
+.fc.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.post{background:#fff;border-radius:18px;border:.5px solid var(--bd);padding:16px;margin:0 14px 10px;box-shadow:var(--sh)}
+.phd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.avb{background:var(--nl);color:var(--navy)}.avg{background:#d1fae5;color:#065f46}.avp{background:#ede9fe;color:#5b21b6}.avo{background:#fef3c7;color:#92400e}
+.pauth{display:flex;flex-direction:column}
+.pnm{font-size:14px;font-weight:600;color:var(--tx)}
+.pwh{font-size:11px;color:var(--mu);margin-top:1px}
+.pbdy{font-size:14px;color:#1e293b;line-height:1.56}
+.ptag{display:inline-block;margin-top:9px;font-size:11px;font-weight:600;background:var(--nl);color:var(--navy);padding:4px 10px;border-radius:20px}
+.pacts{display:flex;gap:14px;margin-top:12px;padding-top:10px;border-top:.5px solid var(--bd)}
+.pact{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mu);cursor:pointer}
+.pcfm{color:var(--grn);font-weight:600}
+
+/* ════ REPORT ════ */
+.rbody{padding:20px 16px}
+.fl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);margin-bottom:9px;margin-top:22px}
+.fl:first-child{margin-top:0}
+
+/* Dropdown */
+.ddwrap{position:relative}
+.ddsel{width:100%;background:#fff;border:.5px solid var(--bd);border-radius:14px;padding:13px 16px;font-size:14px;font-weight:500;color:var(--mu);display:flex;justify-content:space-between;align-items:center;cursor:pointer;box-shadow:var(--sh)}
+.ddsel.chosen{color:var(--tx)}
+.ddlist{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:.5px solid var(--bd);border-radius:14px;box-shadow:0 8px 32px rgba(10,32,80,.12);z-index:50;overflow:hidden;display:none}
+.ddlist.open{display:block}
+.ddopt{padding:13px 16px;font-size:14px;color:var(--tx);cursor:pointer;border-bottom:.5px solid var(--bd)}
+.ddopt:last-child{border-bottom:none}
+.ddopt:hover,.ddopt:active{background:var(--nl)}
+
+.phz{background:#fff;border:1.5px dashed var(--bd);border-radius:14px;padding:22px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer}
+.phl{font-size:13px;color:var(--mu);text-align:center}
+.aip{background:#ede9fe;color:#5b21b6;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+
+/* time slider */
+.tvl{font-size:16px;font-weight:600;color:var(--navy);text-align:center;margin-bottom:10px}
+input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--bd);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--navy);border:3px solid #fff;box-shadow:0 2px 10px rgba(10,32,80,.28);cursor:pointer}
+.tticks{display:flex;justify-content:space-between;margin-top:7px}
+.ttick{font-size:10px;color:var(--mu)}
+
+/* toggle buttons — fixed */
+.mgrid{display:flex;flex-direction:column;gap:7px}
+.mrow{background:#fff;border:.5px solid var(--bd);border-radius:13px;display:flex;align-items:center;padding:0 14px;min-height:50px;box-shadow:var(--sh)}
+.mnm{flex:1;font-size:13px;font-weight:500;color:var(--tx)}
+.mtogs{display:flex;gap:6px}
+.tb{font-size:11px;font-weight:600;padding:6px 12px;border-radius:20px;border:1.5px solid var(--bd);color:var(--mu);background:var(--sf);cursor:pointer;white-space:nowrap;transition:all .12s;user-select:none}
+.tb.in{background:#d1fae5;color:#065f46;border-color:#86efac}
+.tb.out{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+.tb.av{background:var(--nl);color:var(--navy);border-color:#93b4d8}
+.tb.nav{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+
+textarea.cmt{width:100%;background:#fff;border:.5px solid var(--bd);border-radius:14px;padding:12px 14px;font-size:14px;color:var(--tx);font-family:'DM Sans',sans-serif;resize:none;outline:none;box-shadow:var(--sh);line-height:1.5}
+textarea.cmt::placeholder{color:var(--mu)}
+.ptogr{background:#fff;border-radius:14px;border:.5px solid var(--bd);padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:var(--sh)}
+.ttrack{width:44px;height:26px;border-radius:13px;position:relative;flex-shrink:0;transition:background .2s;background:var(--navy)}
+.ttrack.off{background:var(--bd)}
+.tknob{position:absolute;top:3px;right:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:right .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.ttrack.off .tknob{right:21px}
+.ptl{font-size:13px;font-weight:500;color:var(--tx)}
+.subbtn{width:100%;background:var(--navy);color:#fff;border-radius:16px;padding:17px;font-size:16px;font-weight:700;text-align:center;cursor:pointer;margin-top:16px;transition:opacity .13s}
+.subbtn:active{opacity:.82}
+
+/* ════ ALERTS ════ */
+.ldot{width:8px;height:8px;background:var(--red);border-radius:50%;display:inline-block;box-shadow:0 0 0 3px rgba(220,38,38,.18);margin-right:5px}
+.alc{margin:0 14px 10px;border-radius:18px;padding:16px 18px;cursor:pointer;transition:transform .13s}
+.alc:active{transform:scale(.98)}
+.acurg{background:#fff5f5;border:1px solid #fecaca}
+.uey{display:flex;align-items:center;gap:6px;margin-bottom:9px}
+.ubdg{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em}
+.utm{font-size:11px;color:#b91c1c}
+.utit{font-size:15px;font-weight:700;color:#7f1d1d;line-height:1.4;margin-bottom:7px}
+.ubdy{font-size:13px;color:#991b1b;line-height:1.55}
+.uact{display:inline-flex;align-items:center;gap:6px;margin-top:13px;background:var(--red);color:#fff;font-size:13px;font-weight:600;padding:9px 16px;border-radius:20px;cursor:pointer}
+.acai{background:#f0f5ff;border:1px solid #bfdbfe}
+.aey{display:flex;align-items:center;gap:6px;margin-bottom:9px}
+.abdg{background:var(--navy);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em}
+.atm{font-size:11px;color:var(--nm)}
+.atit{font-size:15px;font-weight:700;color:var(--navy);line-height:1.4;margin-bottom:7px}
+.abdy{font-size:13px;color:#1e40af;line-height:1.55}
+
+/* ════ PROFILE ════ */
+.pavt{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0}
+.sccard{margin:16px 16px 0;background:#fff;border-radius:22px;padding:20px 22px;box-shadow:0 8px 32px rgba(10,32,80,.14);border:.5px solid var(--bd)}
+.sc-top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.sc-lbl{font-size:12px;font-weight:600;color:var(--mu)}
+.sctier{font-size:13px;font-weight:700;background:#fef3c7;color:#92400e;padding:5px 14px;border-radius:20px}
+.sc-num-row{display:flex;align-items:baseline;gap:6px;margin-bottom:14px}
+.scn{font-size:44px;font-weight:800;color:var(--navy);line-height:1}
+.scunit{font-size:14px;color:var(--mu);font-weight:500}
+.scbw{height:7px;background:var(--bd);border-radius:4px;margin-bottom:14px;overflow:hidden}
+.scb{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--navy),var(--acc));width:79%}
+.scdesc{font-size:12px;color:var(--mu);line-height:1.5;margin-bottom:16px}
+.scsts{display:flex;gap:8px}
+.ss{flex:1;background:var(--sf);border-radius:12px;padding:10px 8px;text-align:center}
+.ssn{font-size:18px;font-weight:700;color:var(--navy)}
+.ssl{font-size:10px;color:var(--mu);margin-top:2px}
+.impc{margin:14px 16px 0;background:#f0fdf4;border:1px solid #86efac;border-radius:18px;padding:18px}
+.impey{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#059669;margin-bottom:8px}
+.impt{font-size:16px;font-weight:700;color:#064e3b;margin-bottom:5px}
+.impb{font-size:13px;color:#065f46;line-height:1.5}
+.bdgs{display:flex;gap:7px;padding:0 16px;flex-wrap:wrap;margin-top:16px}
+.bdg{font-size:12px;font-weight:600;padding:6px 13px;border-radius:20px}
+.bdgg{background:#fef3c7;color:#92400e}.bdgb{background:var(--nl);color:var(--navy)}.bdgn{background:#d1fae5;color:#065f46}
+.psec{padding:20px 16px 0}
+.psl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);margin-bottom:10px}
+.prow{display:flex;align-items:center;gap:12px;background:#fff;border:.5px solid var(--bd);border-radius:14px;padding:13px 14px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh)}
+.proi{width:36px;height:36px;background:var(--nl);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.prob{flex:1}
+.prot{font-size:14px;font-weight:600;color:var(--tx)}
+.pros{font-size:11px;color:var(--mu);margin-top:2px}
+.proa{color:var(--bd);font-size:20px;line-height:1}
+</style>
+</head>
+<body>
+<div class="device">
+<div class="island"></div>
+
+<!-- ████ MAPS ████ -->
+<div id="s-maps" class="screen active">
+  <!-- Blue header for maps -->
+  <div class="map-hdr">
+    <div class="map-sb">
+      <span class="st">9:41</span>
+      <div class="si">
+        <svg width="16" height="11" viewBox="0 0 16 11" fill="#fff"><path d="M8 2.2C5.6 2.2 3.4 3.1 1.8 4.7L0 2.8C2.1.9 4.9 0 8 0s5.9.9 8 2.8l-1.8 1.9C12.6 3.1 10.4 2.2 8 2.2zm0 3.5c-1.4 0-2.7.5-3.7 1.4L2.5 5.2C3.9 3.9 5.9 3 8 3s4.1.9 5.5 2.2l-1.8 1.9C10.7 6.2 9.4 5.7 8 5.7zm0 3.5c-.8 0-1.5.3-2 .8L4.2 8.1C5.1 7.2 6.5 6.6 8 6.6s2.9.6 3.8 1.5L10 9.9c-.5-.4-1.2-.7-2-.7zM8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg>
+        <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="18" height="10" rx="2" stroke="#fff" stroke-opacity=".5"/><rect x="1.5" y="1.5" width="13" height="8" rx="1" fill="#fff"/><path d="M20 3.5v3" stroke="#fff" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div style="padding:0 20px 6px;display:flex;justify-content:space-between;align-items:baseline;">
+      <div style="font-size:26px;font-weight:700;color:#fff;">Nearby Clinics</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.6);">Morningside Heights</div>
+    </div>
+    <div class="map-search">
+      <svg width="15" height="15" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span class="map-st">Search clinics, medications...</span>
+    </div>
+    <!-- legend inside blue bar -->
+    <div class="map-legend">
+      <div class="ml-item"><div class="ml-dot" style="background:#059669"></div>Not busy</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#d97706"></div>Moderate</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#dc2626"></div>Busy / Alert</div>
+    </div>
+  </div>
+
+  <div class="map-svg-area">
+    <svg width="390" height="236" viewBox="0 0 390 236" xmlns="http://www.w3.org/2000/svg">
+      <rect width="390" height="236" fill="#d4e3f3"/>
+      <rect x="55" y="0" width="70" height="54" rx="3" fill="#b4cce4" opacity=".6"/>
+      <rect x="140" y="0" width="90" height="54" rx="3" fill="#b4cce4" opacity=".6"/>
+      <rect x="245" y="0" width="90" height="54" rx="3" fill="#b4cce4" opacity=".6"/>
+      <rect x="55" y="70" width="70" height="54" rx="3" fill="#b4cce4" opacity=".5"/>
+      <rect x="140" y="70" width="90" height="54" rx="3" fill="#b4cce4" opacity=".5"/>
+      <rect x="245" y="70" width="90" height="54" rx="3" fill="#b4cce4" opacity=".5"/>
+      <rect x="55" y="140" width="70" height="54" rx="3" fill="#b4cce4" opacity=".4"/>
+      <rect x="140" y="140" width="90" height="54" rx="3" fill="#b4cce4" opacity=".4"/>
+      <rect x="245" y="140" width="90" height="54" rx="3" fill="#b4cce4" opacity=".4"/>
+      <rect x="0" y="54" width="390" height="16" fill="#dceaf7" opacity=".95"/>
+      <rect x="0" y="124" width="390" height="16" fill="#dceaf7" opacity=".95"/>
+      <rect x="0" y="194" width="390" height="16" fill="#dceaf7" opacity=".95"/>
+      <rect x="0" y="0" width="55" height="236" fill="#dceaf7" opacity=".8"/>
+      <rect x="125" y="0" width="15" height="236" fill="#dceaf7" opacity=".8"/>
+      <rect x="235" y="0" width="10" height="236" fill="#dceaf7" opacity=".8"/>
+      <rect x="335" y="0" width="55" height="236" fill="#dceaf7" opacity=".7"/>
+      <text x="195" y="118" fill="#98b4cc" font-size="9" font-family="sans-serif" text-anchor="middle" font-weight="600">Broadway</text>
+      <text x="195" y="188" fill="#98b4cc" font-size="9" font-family="sans-serif" text-anchor="middle" font-weight="600">W 110th St</text>
+      <text x="195" y="48" fill="#98b4cc" font-size="9" font-family="sans-serif" text-anchor="middle" font-weight="600">W 116th St</text>
+      <!-- Columbia Health — GREEN (open, same as others) -->
+      <g onclick="openClinic('columbia')" style="cursor:pointer">
+        <circle cx="100" cy="92" r="20" fill="rgba(5,150,105,.12)"/>
+        <circle cx="100" cy="92" r="13" fill="#059669"/>
+        <text x="100" y="97" fill="#fff" font-size="14" font-family="sans-serif" text-anchor="middle" font-weight="700">+</text>
+        <rect x="44" y="107" width="112" height="17" rx="4" fill="rgba(255,255,255,.93)"/>
+        <text x="100" y="119" fill="#059669" font-size="9" font-family="sans-serif" text-anchor="middle" font-weight="700">Columbia Health</text>
+      </g>
+      <!-- CityMD — RED (busy, matches list dot) -->
+      <g onclick="openClinic('citymd')" style="cursor:pointer">
+        <circle cx="290" cy="82" r="20" fill="rgba(220,38,38,.12)"/>
+        <circle cx="290" cy="82" r="13" fill="#dc2626"/>
+        <text x="290" y="87" fill="#fff" font-size="14" font-family="sans-serif" text-anchor="middle" font-weight="700">+</text>
+        <rect x="258" y="97" width="64" height="17" rx="4" fill="rgba(255,255,255,.93)"/>
+        <text x="290" y="109" fill="#dc2626" font-size="9" font-family="sans-serif" text-anchor="middle" font-weight="700">CityMD</text>
+      </g>
+      <!-- AM/PM — GREEN (not busy, matches list dot) -->
+      <g onclick="openClinic('ampm')" style="cursor:pointer">
+        <circle cx="195" cy="165" r="20" fill="rgba(5,150,105,.12)"/>
+        <circle cx="195" cy="165" r="13" fill="#059669"/>
+        <text x="195" y="170" fill="#fff" font-size="14" font-family="sans-serif" text-anchor="middle" font-weight="700">+</text>
+        <rect x="140" y="180" width="110" height="17" rx="4" fill="rgba(255,255,255,.93)"/>
+        <text x="195" y="192" fill="#059669" font-size="9" font-family="sans-serif" text-anchor="middle" font-weight="700">AM/PM Urgent Care</text>
+      </g>
+      <!-- You — distinct outline -->
+      <circle cx="182" cy="130" r="11" fill="rgba(10,32,80,.12)"/>
+      <circle cx="182" cy="130" r="6" fill="#fff" stroke="#0a2050" stroke-width="3"/>
+    </svg>
+  </div>
+
+  <div class="scroll" style="background:#fff;">
+    <div style="padding:16px 14px 0;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="font-size:13px;font-weight:600;color:var(--mu);">3 clinics nearby</div>
+      <div style="font-size:13px;color:var(--navy);font-weight:600;">See all</div>
+    </div>
+    <div style="padding:0 14px 14px;">
+      <div class="cr" onclick="openClinic('columbia')">
+        <div class="ci" style="background:#d1fae5"><svg width="20" height="20" fill="none" stroke="#065f46" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <div class="cb">
+          <div class="cn">Columbia Health</div>
+          <div class="cm">0.2 mi · ~15 min wait</div>
+          <div class="cts"><div class="ct cg1">Insulin in stock</div><div class="ct cb1">CU insurance</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+          <div class="cdot" style="background:#059669"></div>
+          <svg width="14" height="14" fill="none" stroke="#c0ccd8" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+      <div class="cr" onclick="openClinic('citymd')">
+        <div class="ci" style="background:#fee2e2"><svg width="20" height="20" fill="none" stroke="#991b1b" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <div class="cb">
+          <div class="cn">CityMD</div>
+          <div class="cm">0.5 mi · ~30 min wait</div>
+          <div class="cts"><div class="ct cr1">Busy now</div><div class="ct cb1">X-ray available</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+          <div class="cdot" style="background:#dc2626"></div>
+          <svg width="14" height="14" fill="none" stroke="#c0ccd8" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+      <div class="cr" onclick="openClinic('ampm')">
+        <div class="ci" style="background:#d1fae5"><svg width="20" height="20" fill="none" stroke="#065f46" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <div class="cb">
+          <div class="cn">AM/PM Urgent Care</div>
+          <div class="cm">0.8 mi · ~10 min wait</div>
+          <div class="cts"><div class="ct cr1">No EpiPen</div><div class="ct cb1">Walk-in</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+          <div class="cdot" style="background:#059669"></div>
+          <svg width="14" height="14" fill="none" stroke="#c0ccd8" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clinic overlays -->
+  <div id="ov-columbia" class="overlay">
+    <div class="ovhd">
+      <div class="ovbk" onclick="closeClinic('columbia')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Back</div>
+      <div class="ovnm">Columbia Health</div><div class="ovsb">116th St & Broadway</div>
+      <div class="ovps"><div class="ovp ovg">Open</div><div class="ovp ovy">~15 min wait</div><div class="ovp ovw">CU insurance</div></div>
+    </div>
+    <div class="scroll"><div class="prl">
+      <div class="pll">Reported Prices & Availability</div>
+      <div class="pri"><div><div class="prn">Student insurance copay</div><div class="prt">2 hr ago · 5 confirms</div></div><div class="pra">$20</div></div>
+      <div class="pri"><div><div class="prn">Uninsured visit</div><div class="prt">4 hr ago</div></div><div class="pra">$180</div></div>
+      <div class="pri"><div><div class="prn">Insulin pen</div><div class="prt">In stock · 45 min ago · 3 confirms</div></div><div class="pra">$35</div></div>
+      <div class="pri"><div><div class="prn">EpiPen</div><div class="prt">In stock · 30 min ago</div></div><div class="pra">$120</div></div>
+      <div class="pri"><div><div class="prn">Rapid strep test</div><div class="prt">1 hr ago</div></div><div class="pra">$45</div></div>
+      <div class="pri"><div><div class="prn">Blood draw / lab</div><div class="prt">3 hr ago</div></div><div class="pra">$95</div></div>
+    </div><div style="height:30px"></div></div>
+  </div>
+  <div id="ov-citymd" class="overlay">
+    <div class="ovhd">
+      <div class="ovbk" onclick="closeClinic('citymd')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Back</div>
+      <div class="ovnm">CityMD</div><div class="ovsb">Broadway & 110th</div>
+      <div class="ovps"><div class="ovp ovg">Open</div><div class="ovp ovy">~30 min wait</div></div>
+    </div>
+    <div class="scroll"><div class="prl">
+      <div class="pll">Reported Prices & Availability</div>
+      <div class="pri"><div><div class="prn">Student insurance copay</div><div class="prt">1 hr ago · 8 confirms</div></div><div class="pra">$60</div></div>
+      <div class="pri"><div><div class="prn">Uninsured visit</div><div class="prt">2 hr ago</div></div><div class="pra">$250</div></div>
+      <div class="pri"><div><div class="prn">X-ray (self-pay)</div><div class="prt">Available · 3 hr ago · 2 confirms</div></div><div class="pra">$250</div></div>
+      <div class="pri"><div><div class="prn">Insulin pen</div><div class="prt">In stock · 2 hr ago</div></div><div class="pra">$48</div></div>
+      <div class="pri"><div><div class="prn">Stitches / wound care</div><div class="prt">6 hr ago</div></div><div class="pra">$180</div></div>
+      <div class="pri"><div><div class="prn">COVID test</div><div class="prt">5 hr ago</div></div><div class="pra">$80</div></div>
+    </div><div style="height:30px"></div></div>
+  </div>
+  <div id="ov-ampm" class="overlay">
+    <div class="ovhd">
+      <div class="ovbk" onclick="closeClinic('ampm')"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg> Back</div>
+      <div class="ovnm">AM/PM Urgent Care</div><div class="ovsb">W 107th St</div>
+      <div class="ovps"><div class="ovp ovg">Open</div><div class="ovp" style="background:rgba(16,185,129,.18);color:#6ee7b7">~10 min wait</div></div>
+    </div>
+    <div class="scroll"><div class="prl">
+      <div class="pll">Reported Prices & Availability</div>
+      <div class="pri"><div><div class="prn">Student insurance copay</div><div class="prt">3 hr ago · 4 confirms</div></div><div class="pra">$50</div></div>
+      <div class="pri"><div><div class="prn">Uninsured visit</div><div class="prt">4 hr ago</div></div><div class="pra">$150</div></div>
+      <div class="pri"><div><div class="prn">EpiPen</div><div class="prt" style="color:var(--red)">Out of stock · 20 min ago</div></div><div class="pra prana">Out</div></div>
+      <div class="pri"><div><div class="prn">Albuterol inhaler</div><div class="prt">In stock · 1 hr ago</div></div><div class="pra">$45</div></div>
+      <div class="pri"><div><div class="prn">Blood draw / lab</div><div class="prt">5 hr ago</div></div><div class="pra">$95</div></div>
+    </div><div style="height:30px"></div></div>
+  </div>
+
+  <div class="tabbar">
+    <div class="tab on" onclick="go('maps')"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" stroke="#0a2050" stroke-width="2" fill="rgba(10,32,80,.1)"/><circle cx="12" cy="10" r="3" stroke="#0a2050" stroke-width="2"/></svg><span class="tl" style="color:var(--navy)">Maps</span></div>
+    <div class="tab" onclick="go('community')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="tl">Community</span></div>
+    <div class="tpw" onclick="go('report')"><div class="tpb"><svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span class="tpl">Report</span></div>
+    <div class="tab" onclick="go('alerts')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="tl">Alerts</span></div>
+    <div class="tab" onclick="go('profile')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="tl">Profile</span></div>
+  </div>
+</div>
+
+<!-- ████ COMMUNITY ████ -->
+<div id="s-community" class="screen">
+  <div class="hdr">
+    <div class="sb-row inHdr">
+      <span class="st">9:41</span>
+      <div class="si"><svg width="16" height="11" viewBox="0 0 16 11" fill="#fff"><path d="M8 2.2C5.6 2.2 3.4 3.1 1.8 4.7L0 2.8C2.1.9 4.9 0 8 0s5.9.9 8 2.8l-1.8 1.9C12.6 3.1 10.4 2.2 8 2.2zm0 3.5c-1.4 0-2.7.5-3.7 1.4L2.5 5.2C3.9 3.9 5.9 3 8 3s4.1.9 5.5 2.2l-1.8 1.9C10.7 6.2 9.4 5.7 8 5.7zm0 3.5c-.8 0-1.5.3-2 .8L4.2 8.1C5.1 7.2 6.5 6.6 8 6.6s2.9.6 3.8 1.5L10 9.9c-.5-.4-1.2-.7-2-.7zM8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg><svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="18" height="10" rx="2" stroke="#fff" stroke-opacity=".5"/><rect x="1.5" y="1.5" width="13" height="8" rx="1" fill="#fff"/><path d="M20 3.5v3" stroke="#fff" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="hdr-row"><div class="hdr-title">Community</div><div class="hdr-pill">142 online</div></div>
+  </div>
+  <div class="fscr"><div class="fc on">All</div><div class="fc">Availability</div><div class="fc">Wait times</div><div class="fc">Pricing</div><div class="fc">Urgent</div></div>
+  <div class="scroll" style="background:var(--sf);">
+    <div style="height:10px"></div>
+    <div class="post">
+      <div class="phd"><div class="av avo">AK</div><div class="pauth"><div class="pnm">Aryan Kaul</div><div class="pwh">12 min ago</div></div></div>
+      <div class="pbdy">just got back from CityMD, waited like 40 min but they had insulin. staff was actually really nice. bring your CUID</div>
+      <div class="ptag">CityMD</div>
+      <div class="pacts"><div class="pact pcfm"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Confirm (14)</div><div class="pact"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Reply</div></div>
+    </div>
+    <div class="post">
+      <div class="phd"><div class="av avp">DT</div><div class="pauth"><div class="pnm">Daphne Tsai</div><div class="pwh">28 min ago</div></div></div>
+      <div class="pbdy">AM/PM is super empty rn, literally walked right in. no EpiPen tho, everything else seems fine</div>
+      <div class="ptag">AM/PM Urgent Care</div>
+      <div class="pacts"><div class="pact pcfm"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Confirm (9)</div><div class="pact"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Reply</div></div>
+    </div>
+    <div class="post">
+      <div class="phd"><div class="av avb">AV</div><div class="pauth"><div class="pnm">Ana Vizitiv</div><div class="pwh">45 min ago</div></div></div>
+      <div class="pbdy">Columbia Health copay was $20 with student insurance, I saw the bill. way cheaper than CityMD and the wait wasn't bad at all</div>
+      <div class="ptag">Columbia Health</div>
+      <div class="pacts"><div class="pact pcfm"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Confirm (21)</div><div class="pact"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Reply</div></div>
+    </div>
+    <div class="post">
+      <div class="phd"><div class="av avg">YG</div><div class="pauth"><div class="pnm">Yuchen Guo</div><div class="pwh">1 hr ago</div></div></div>
+      <div class="pbdy">heads up AM/PM is out of EpiPens, I asked at the front desk. Columbia Health still has them</div>
+      <div class="ptag">AM/PM Urgent Care</div>
+      <div class="pacts"><div class="pact pcfm"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Confirm (7)</div><div class="pact"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Reply</div></div>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+  <div class="tabbar">
+    <div class="tab" onclick="go('maps')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="tl">Maps</span></div>
+    <div class="tab on" onclick="go('community')"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#0a2050" stroke-width="2" fill="rgba(10,32,80,.08)"/><circle cx="9" cy="7" r="4" stroke="#0a2050" stroke-width="2" fill="rgba(10,32,80,.08)"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="#0a2050" stroke-width="2"/></svg><span class="tl" style="color:var(--navy)">Community</span></div>
+    <div class="tpw" onclick="go('report')"><div class="tpb"><svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span class="tpl">Report</span></div>
+    <div class="tab" onclick="go('alerts')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="tl">Alerts</span></div>
+    <div class="tab" onclick="go('profile')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="tl">Profile</span></div>
+  </div>
+</div>
+
+<!-- ████ REPORT ████ -->
+<div id="s-report" class="screen">
+  <div class="hdr">
+    <div class="sb-row inHdr">
+      <span class="st">9:41</span>
+      <div class="si"><svg width="16" height="11" viewBox="0 0 16 11" fill="#fff"><path d="M8 2.2C5.6 2.2 3.4 3.1 1.8 4.7L0 2.8C2.1.9 4.9 0 8 0s5.9.9 8 2.8l-1.8 1.9C12.6 3.1 10.4 2.2 8 2.2zm0 3.5c-1.4 0-2.7.5-3.7 1.4L2.5 5.2C3.9 3.9 5.9 3 8 3s4.1.9 5.5 2.2l-1.8 1.9C10.7 6.2 9.4 5.7 8 5.7zm0 3.5c-.8 0-1.5.3-2 .8L4.2 8.1C5.1 7.2 6.5 6.6 8 6.6s2.9.6 3.8 1.5L10 9.9c-.5-.4-1.2-.7-2-.7zM8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg><svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="18" height="10" rx="2" stroke="#fff" stroke-opacity=".5"/><rect x="1.5" y="1.5" width="13" height="8" rx="1" fill="#fff"/><path d="M20 3.5v3" stroke="#fff" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="hdr-title">Submit Report</div>
+    <div class="hdr-sub">Help Lions find care in real time</div>
+  </div>
+  <div class="scroll" style="background:var(--sf);">
+  <div class="rbody">
+    <div class="fl">Clinic *</div>
+    <div class="ddwrap" id="ddwrap">
+      <div class="ddsel" id="ddsel" onclick="toggleDD()">
+        <span id="ddtxt">Select a clinic</span>
+        <svg width="14" height="14" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="ddlist" id="ddlist">
+        <div class="ddopt" onclick="pickClinic('Columbia Health','116th & Broadway')">Columbia Health <span style="color:var(--mu);font-size:12px;">· 116th & Broadway</span></div>
+        <div class="ddopt" onclick="pickClinic('CityMD','Broadway & 110th')">CityMD <span style="color:var(--mu);font-size:12px;">· Broadway & 110th</span></div>
+        <div class="ddopt" onclick="pickClinic('AM/PM Urgent Care','W 107th St')">AM/PM Urgent Care <span style="color:var(--mu);font-size:12px;">· W 107th St</span></div>
+      </div>
+    </div>
+
+    <div class="fl">When did this occur? *</div>
+    <div class="tvl" id="tvl">Just now</div>
+    <input type="range" min="0" max="4" step="1" value="0" oninput="upTime(this.value)">
+    <div class="tticks"><span class="ttick">Just now</span><span class="ttick">15 min</span><span class="ttick">30 min</span><span class="ttick">1 hr</span><span class="ttick">2+ hrs</span></div>
+
+    <div class="fl">Photo</div>
+    <div class="phz">
+      <svg width="28" height="28" fill="none" stroke="#7a8fa8" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      <div class="phl">Tap to upload or take photo</div>
+      <div class="aip">AI-assisted recognition</div>
+    </div>
+
+    <div class="fl">Status</div>
+    <div class="mgrid">
+      <div class="mrow"><div class="mnm">Clinic status</div><div class="mtogs" id="tg-status"><div class="tb" onclick="singTog('tg-status',this,'av')">Open</div><div class="tb" onclick="singTog('tg-status',this,'nav')">Closed</div></div></div>
+    </div>
+
+    <div class="fl">Wait time</div>
+    <div class="mgrid">
+      <div class="mrow"><div class="mnm">Current wait</div><div class="mtogs" id="tg-wait"><div class="tb" onclick="singTog('tg-wait',this,'av')">&lt;15 min</div><div class="tb" onclick="singTog('tg-wait',this,'av')">15–30 min</div><div class="tb" onclick="singTog('tg-wait',this,'av')">30+ min</div></div></div>
+    </div>
+
+    <div class="fl">Medications</div>
+    <div class="mgrid">
+      <div class="mrow"><div class="mnm">Insulin</div><div class="mtogs" id="tg-ins"><div class="tb in" onclick="singTog('tg-ins',this,'in')">In stock</div><div class="tb" onclick="singTog('tg-ins',this,'out')">Out</div></div></div>
+      <div class="mrow"><div class="mnm">EpiPen</div><div class="mtogs" id="tg-epi"><div class="tb" onclick="singTog('tg-epi',this,'in')">In stock</div><div class="tb" onclick="singTog('tg-epi',this,'out')">Out</div></div></div>
+      <div class="mrow"><div class="mnm">Albuterol inhaler</div><div class="mtogs" id="tg-alb"><div class="tb" onclick="singTog('tg-alb',this,'in')">In stock</div><div class="tb" onclick="singTog('tg-alb',this,'out')">Out</div></div></div>
+      <div class="mrow"><div class="mnm">Amoxicillin</div><div class="mtogs" id="tg-amo"><div class="tb" onclick="singTog('tg-amo',this,'in')">In stock</div><div class="tb" onclick="singTog('tg-amo',this,'out')">Out</div></div></div>
+      <div class="mrow"><div class="mnm" style="color:var(--mu);font-style:italic">Other...</div><div class="mtogs" id="tg-oth"><div class="tb" onclick="singTog('tg-oth',this,'in')">In stock</div><div class="tb" onclick="singTog('tg-oth',this,'out')">Out</div></div></div>
+    </div>
+
+    <div class="fl">Services</div>
+    <div class="mgrid">
+      <div class="mrow"><div class="mnm">X-ray</div><div class="mtogs" id="tg-xr"><div class="tb" onclick="singTog('tg-xr',this,'av')">Available</div><div class="tb" onclick="singTog('tg-xr',this,'nav')">Not avail.</div></div></div>
+      <div class="mrow"><div class="mnm">Blood draw / lab</div><div class="mtogs" id="tg-bd"><div class="tb" onclick="singTog('tg-bd',this,'av')">Available</div><div class="tb" onclick="singTog('tg-bd',this,'nav')">Not avail.</div></div></div>
+      <div class="mrow"><div class="mnm">COVID / flu test</div><div class="mtogs" id="tg-cv"><div class="tb" onclick="singTog('tg-cv',this,'av')">Available</div><div class="tb" onclick="singTog('tg-cv',this,'nav')">Not avail.</div></div></div>
+    </div>
+
+    <div class="fl">Pricing</div>
+    <div class="mgrid">
+      <div class="mrow" style="flex-direction:column;align-items:flex-start;height:auto;padding:12px 14px;gap:8px;">
+        <div class="mnm">Add price info</div>
+        <input type="text" placeholder="e.g. Student copay $60, X-ray $250" style="width:100%;background:var(--sf);border:.5px solid var(--bd);border-radius:9px;padding:9px 12px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--tx);outline:none">
+      </div>
+    </div>
+
+    <div class="fl">Comment</div>
+    <textarea class="cmt" rows="3" placeholder="Anything else others should know..."></textarea>
+
+    <div style="margin-top:14px">
+      <div class="ptogr" onclick="this.querySelector('.ttrack').classList.toggle('off')">
+        <div class="ttrack"><div class="tknob"></div></div>
+        <div class="ptl">Also share as a community post</div>
+      </div>
+    </div>
+    <div class="subbtn" onclick="alert('Report submitted! +15 pts')">Submit Report</div>
+    <div style="height:24px"></div>
+  </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab" onclick="go('maps')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="tl">Maps</span></div>
+    <div class="tab" onclick="go('community')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="tl">Community</span></div>
+    <div class="tpw on" onclick="go('report')"><div class="tpb"><svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span class="tpl" style="color:var(--navy);font-weight:600">Report</span></div>
+    <div class="tab" onclick="go('alerts')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="tl">Alerts</span></div>
+    <div class="tab" onclick="go('profile')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="tl">Profile</span></div>
+  </div>
+</div>
+
+<!-- ████ ALERTS ████ -->
+<div id="s-alerts" class="screen">
+  <div class="hdr">
+    <div class="sb-row inHdr">
+      <span class="st">9:41</span>
+      <div class="si"><svg width="16" height="11" viewBox="0 0 16 11" fill="#fff"><path d="M8 2.2C5.6 2.2 3.4 3.1 1.8 4.7L0 2.8C2.1.9 4.9 0 8 0s5.9.9 8 2.8l-1.8 1.9C12.6 3.1 10.4 2.2 8 2.2zm0 3.5c-1.4 0-2.7.5-3.7 1.4L2.5 5.2C3.9 3.9 5.9 3 8 3s4.1.9 5.5 2.2l-1.8 1.9C10.7 6.2 9.4 5.7 8 5.7zm0 3.5c-.8 0-1.5.3-2 .8L4.2 8.1C5.1 7.2 6.5 6.6 8 6.6s2.9.6 3.8 1.5L10 9.9c-.5-.4-1.2-.7-2-.7zM8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg><svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="18" height="10" rx="2" stroke="#fff" stroke-opacity=".5"/><rect x="1.5" y="1.5" width="13" height="8" rx="1" fill="#fff"/><path d="M20 3.5v3" stroke="#fff" stroke-linecap="round"/></svg></div>
+    </div>
+    <div class="hdr-row">
+      <div>
+        <div style="display:flex;align-items:center;gap:7px;"><div class="ldot"></div><div class="hdr-title">Alerts</div></div>
+        <div class="hdr-sub">Morningside Heights · Live</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll" style="background:var(--sf);">
+    <div class="eyebrow">Urgent Help Needed</div>
+    <div class="alc acurg">
+      <div class="uey"><div class="ubdg">Urgent</div><span class="utm">5 min ago</span></div>
+      <div class="utit">Student nearby needs an EpiPen — can you check?</div>
+      <div class="ubdy">No nearby clinic has confirmed EpiPen stock. If you're near Columbia Health or CityMD right now, could you check and submit a report?</div>
+      <div class="uact" onclick="this.innerHTML='&#10003;&nbsp;Thanks for helping!'"><svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>I can check</div>
+    </div>
+    <div class="alc acurg">
+      <div class="uey"><div class="ubdg">Urgent</div><span class="utm">22 min ago</span></div>
+      <div class="utit">Insulin stock at Columbia Health unconfirmed — anyone nearby?</div>
+      <div class="ubdy">Last confirmed report was 3 hours ago. A student needs insulin today. Can you verify whether Columbia Health still has it in stock?</div>
+      <div class="uact" onclick="this.innerHTML='&#10003;&nbsp;Thanks for helping!'"><svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>I can verify</div>
+    </div>
+    <div class="eyebrow">AI-Generated Updates</div>
+    <div class="alc acai">
+      <div class="aey"><div class="abdg">AI Alert</div><span class="atm">Just now</span></div>
+      <div class="atit">Columbia Health likely closing early today</div>
+      <div class="abdy">Based on 3 student reports and a flood advisory in the area, Columbia Health appears to be closing at 3 pm. Nearest alternatives: CityMD (0.5 mi) or AM/PM Urgent Care (0.8 mi).</div>
+    </div>
+    <div class="alc acai">
+      <div class="aey"><div class="abdg">AI Alert</div><span class="atm">1 hr ago</span></div>
+      <div class="atit">Wait times rising at CityMD</div>
+      <div class="abdy">Reported wait times at CityMD have climbed from 15 to 30+ minutes in the past hour, likely due to reduced availability elsewhere on campus.</div>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+  <div class="tabbar">
+    <div class="tab" onclick="go('maps')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="tl">Maps</span></div>
+    <div class="tab" onclick="go('community')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="tl">Community</span></div>
+    <div class="tpw" onclick="go('report')"><div class="tpb"><svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span class="tpl">Report</span></div>
+    <div class="tab on" onclick="go('alerts')"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#0a2050" stroke-width="2" fill="rgba(10,32,80,.08)"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#0a2050" stroke-width="2"/></svg><span class="tl" style="color:var(--navy)">Alerts</span></div>
+    <div class="tab" onclick="go('profile')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="tl">Profile</span></div>
+  </div>
+</div>
+
+<!-- ████ PROFILE ████ -->
+<div id="s-profile" class="screen">
+  <div class="hdr" style="padding-bottom:10px;">
+    <div class="sb-row inHdr">
+      <span class="st">9:41</span>
+      <div class="si"><svg width="16" height="11" viewBox="0 0 16 11" fill="#fff"><path d="M8 2.2C5.6 2.2 3.4 3.1 1.8 4.7L0 2.8C2.1.9 4.9 0 8 0s5.9.9 8 2.8l-1.8 1.9C12.6 3.1 10.4 2.2 8 2.2zm0 3.5c-1.4 0-2.7.5-3.7 1.4L2.5 5.2C3.9 3.9 5.9 3 8 3s4.1.9 5.5 2.2l-1.8 1.9C10.7 6.2 9.4 5.7 8 5.7zm0 3.5c-.8 0-1.5.3-2 .8L4.2 8.1C5.1 7.2 6.5 6.6 8 6.6s2.9.6 3.8 1.5L10 9.9c-.5-.4-1.2-.7-2-.7zM8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg><svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="18" height="10" rx="2" stroke="#fff" stroke-opacity=".5"/><rect x="1.5" y="1.5" width="13" height="8" rx="1" fill="#fff"/><path d="M20 3.5v3" stroke="#fff" stroke-linecap="round"/></svg></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;margin-top:6px;">
+      <div class="pavt">YG</div>
+      <div>
+        <div style="font-size:20px;font-weight:700;color:#fff;">Yuchen Guo</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:3px;">yg3090 · Columbia University</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll" style="background:var(--sf);">
+    <!-- Score card -->
+    <div class="sccard">
+      <div class="sc-top-row">
+        <div class="sc-lbl">Contributor Score</div>
+        <div class="sctier">Gold</div>
+      </div>
+      <div class="sc-num-row">
+        <span class="scn">790</span>
+        <span class="scunit">pts</span>
+      </div>
+      <div class="scbw"><div class="scb"></div></div>
+      <div class="scdesc">Your reports carry 1.4× weight in the system. Gold contributors unlock priority alerts and real-time data access.</div>
+      <div class="scsts">
+        <div class="ss"><div class="ssn">94%</div><div class="ssl">Accuracy</div></div>
+        <div class="ss"><div class="ssn">24</div><div class="ssl">Reports</div></div>
+        <div class="ss"><div class="ssn">187</div><div class="ssl">Confirms</div></div>
+        <div class="ss"><div class="ssn">38</div><div class="ssl">Helped</div></div>
+      </div>
+    </div>
+
+    <div class="impc">
+      <div class="impey">Your impact this week</div>
+      <div class="impt">You helped 38 students</div>
+      <div class="impb">Your 7 reports saved an estimated 4.5 hours of combined wait time. You're in the top 8% of Lions-Med contributors.</div>
+    </div>
+
+    <div class="bdgs">
+      <div class="bdg bdgg">Gold Contributor</div>
+      <div class="bdg bdgn">Verified Student</div>
+      <div class="bdg bdgb">Early Adopter</div>
+    </div>
+
+    <div class="psec">
+      <div class="psl">Activity</div>
+      <div class="prow"><div class="proi"><svg width="17" height="17" fill="none" stroke="#0a2050" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="prob"><div class="prot">My Reports</div><div class="pros">24 total · 7 this week</div></div><div class="proa">›</div></div>
+      <div class="prow"><div class="proi"><svg width="17" height="17" fill="none" stroke="#0a2050" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="prob"><div class="prot">My Posts</div><div class="pros">11 community posts</div></div><div class="proa">›</div></div>
+      <div class="prow"><div class="proi"><svg width="17" height="17" fill="none" stroke="#0a2050" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="prob"><div class="prot">Confirmations Given</div><div class="pros">187 · +12 pts this week</div></div><div class="proa">›</div></div>
+    </div>
+    <div class="psec">
+      <div class="psl">Settings</div>
+      <div class="prow"><div class="proi"><svg width="17" height="17" fill="none" stroke="#0a2050" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div><div class="prob"><div class="prot">Notifications</div><div class="pros">Urgent alerts on</div></div><div class="proa">›</div></div>
+      <div class="prow"><div class="proi"><svg width="17" height="17" fill="none" stroke="#0a2050" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="prob"><div class="prot">Privacy & Data</div><div class="pros">Geofenced to campus</div></div><div class="proa">›</div></div>
+    </div>
+    <div style="height:30px"></div>
+  </div>
+  <div class="tabbar">
+    <div class="tab" onclick="go('maps')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="tl">Maps</span></div>
+    <div class="tab" onclick="go('community')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="tl">Community</span></div>
+    <div class="tpw" onclick="go('report')"><div class="tpb"><svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span class="tpl">Report</span></div>
+    <div class="tab" onclick="go('alerts')"><svg width="22" height="22" fill="none" stroke="#7a8fa8" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="tl">Alerts</span></div>
+    <div class="tab on" onclick="go('profile')"><svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#0a2050" stroke-width="2" fill="rgba(10,32,80,.08)"/><circle cx="12" cy="7" r="4" stroke="#0a2050" stroke-width="2" fill="rgba(10,32,80,.08)"/></svg><span class="tl" style="color:var(--navy)">Profile</span></div>
+  </div>
+</div>
+
+</div>
+<script>
+const screens=['maps','community','report','alerts','profile'];
+function go(n){
+  screens.forEach(s=>document.getElementById('s-'+s).classList.remove('active'));
+  document.getElementById('s-'+n).classList.add('active');
+  // close any open dropdown
+  document.getElementById('ddlist').classList.remove('open');
+}
+function openClinic(id){
+  const o=document.getElementById('ov-'+id);
+  if(!o)return;
+  o.style.display='flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>o.classList.add('open')));
+}
+function closeClinic(id){
+  const o=document.getElementById('ov-'+id);
+  if(!o)return;
+  o.classList.remove('open');
+  setTimeout(()=>o.style.display='none',340);
+}
+const tls=['Just now','~15 min ago','~30 min ago','~1 hour ago','2+ hours ago'];
+function upTime(v){document.getElementById('tvl').textContent=tls[+v];}
+
+// Dropdown
+function toggleDD(){
+  document.getElementById('ddlist').classList.toggle('open');
+}
+function pickClinic(name, loc){
+  const txt=document.getElementById('ddtxt');
+  txt.textContent=name;
+  txt.style.color='var(--tx)';
+  txt.style.fontWeight='500';
+  document.getElementById('ddsel').classList.add('chosen');
+  document.getElementById('ddlist').classList.remove('open');
+}
+// Close dropdown if clicking outside
+document.addEventListener('click', function(e){
+  const wrap=document.getElementById('ddwrap');
+  if(wrap && !wrap.contains(e.target)){
+    document.getElementById('ddlist').classList.remove('open');
+  }
+});
+
+// Toggle buttons — proper exclusive single-select per group
+function singTog(groupId, btn, state){
+  const group=document.getElementById(groupId);
+  const allStates=['in','out','av','nav'];
+  // remove all states from all buttons in group
+  group.querySelectorAll('.tb').forEach(b=>{
+    allStates.forEach(s=>b.classList.remove(s));
+  });
+  // apply state to clicked button only
+  btn.classList.add(state);
+}
+</script>
+</body>
+</html>
