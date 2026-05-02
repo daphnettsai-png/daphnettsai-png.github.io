@@ -1,34 +1,329 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Lions-Med</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lions-Med | Daphne Tsai</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fbfaf7;
+      color: #1f2933;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1100px, 90%); margin: 0 auto; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(251, 250, 247, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e5e0d8;
+    }
+
+    nav {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover { color: #7c5cff; }
+
+    .hero {
+      padding: 6rem 0 4rem;
+    }
+
+    .eyebrow {
+      color: #7c5cff;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: clamp(2.7rem, 6vw, 5rem);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero p {
+      max-width: 780px;
+      font-size: 1.1rem;
+      color: #52606d;
+      margin-bottom: 1rem;
+    }
+
+    section {
+      padding: 4rem 0;
+      border-top: 1px solid #e5e0d8;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-intro {
+      max-width: 800px;
+      color: #52606d;
+      margin-bottom: 2rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #e5e0d8;
+      border-radius: 22px;
+      padding: 1.5rem;
+      box-shadow: 0 12px 34px rgba(31, 41, 51, 0.05);
+    }
+
+    .card h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    .muted {
+      color: #52606d;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 0.85rem 1.15rem;
+      border-radius: 999px;
+      border: 1px solid #1f2933;
+      font-weight: 700;
+      transition: 0.2s ease;
+    }
+
+    .button.primary {
+      background: #1f2933;
+      color: white;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    video {
+      width: 100%;
+      max-width: 850px;
+      border-radius: 22px;
+      border: 1px solid #e5e0d8;
+      box-shadow: 0 12px 34px rgba(31, 41, 51, 0.05);
+      background: white;
+      margin-top: 1rem;
+    }
+
+    footer {
+      padding: 2rem 0;
+      text-align: center;
+      color: #52606d;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 800px) {
+      .grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
 </head>
+
 <body>
+  <header>
+    <nav class="container">
+      <a href="index.html" class="logo">Daphne Tsai</a>
+      <div class="nav-links">
+        <a href="index.html#about">About</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#experience">Experience</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
+    </nav>
+  </header>
 
-<h1>Lions-Med: Disaster Healthcare Access</h1>
+  <main>
+    <section class="hero container">
+      <p class="eyebrow">Healthcare · Product Design · Community Updates</p>
+      <h1>Lions-Med</h1>
+      <p>
+        Developed in collaboration with Yuchen Guo, Aryan Kaul, and Ana Vizitiv.
+      </p>
+      <p>
+        Lions-Med is a disaster healthcare access app designed to help people find reliable clinic information during emergencies, especially when they are in the medical gray zone: not sick enough for the ER, but still needing care.
+      </p>
+      <div class="button-row">
+        <a class="button primary" href="lions-prototype.html" target="_blank">Open Prototype</a>
+        <a class="button" href="index.html#projects">Back to Portfolio</a>
+      </div>
+    </section>
 
-<h2>The Problem</h2>
-<p>
-When a disaster hits NYC, everyone looks at the ERs; but the real crisis happens in the “grey zone.” If you’re managing a chronic illness, a disaster means you can suddenly be cut off. Missed checkups. Prescriptions run out. Clinics quietly close their doors. Google Maps and clinic websites don’t know what’s happening in real time. What was once manageable can quickly become dangerous.
-</p>
+    <section>
+      <div class="container">
+        <h2 class="section-title">The Problem</h2>
+        <p class="section-intro">
+          During disasters, healthcare access becomes confusing and unreliable. Clinics may close, hours may change, transportation may be disrupted, and online information may be outdated. This especially hurts people whose medical needs are important but not emergency-level.
+        </p>
 
-<h2>The Solution</h2>
-<p>
-A community-driven platform that provides real-time updates on clinic availability.
-</p>
+        <div class="grid">
+          <div class="card">
+            <h3>Medical Gray Zone</h3>
+            <p class="muted">
+              Lions-Med focuses on people who need care but may not belong in the ER, such as someone missing routine treatment, follow-up care, or non-emergency medical support during a disaster.
+            </p>
+          </div>
 
-<h2>Use Case</h2>
-<p>
-Users can check whether clinics are open and avoid wasted trips.
-</p>
+          <div class="card">
+            <h3>Information Gap</h3>
+            <p class="muted">
+              The core issue is not only whether care exists, but whether people can trust that the information they see is accurate and current.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<h2>Prototype</h2>
-<a href="lions-prototype.html">Open Prototype →</a>
+    <section>
+      <div class="container">
+        <h2 class="section-title">The Solution</h2>
+        <p class="section-intro">
+          Lions-Med uses community-driven updates, clinic information, and verification signals to help users understand which clinics are open, what services are available, and whether the information is trustworthy.
+        </p>
 
-<h2>Video Demo</h2>
-<video controls width="500">
-  <source src="Lions-Med.mp4" type="video/mp4">
-</video>
+        <div class="grid">
+          <div class="card">
+            <h3>Live Clinic Updates</h3>
+            <p class="muted">
+              Users can view nearby clinics and see whether they are open, closed, or recently updated.
+            </p>
+          </div>
 
+          <div class="card">
+            <h3>Community Reporting</h3>
+            <p class="muted">
+              People in the community can submit updates, helping the platform stay current during fast-changing disaster situations.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Verification</h3>
+            <p class="muted">
+              Updates can be checked through multiple signals so users are not relying on one random post or outdated website.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Privacy Awareness</h3>
+            <p class="muted">
+              The app is designed around sharing clinic status information without requiring users to expose unnecessary personal medical details.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <h2 class="section-title">Use Case</h2>
+        <div class="card">
+          <p class="muted">
+            Imagine a Columbia student during a flood warning who is experiencing a medical issue related to a recent surgery. It is not an ER-level emergency, but they still need care. Instead of walking to a clinic that turns out to be closed, they can check Lions-Med for recent updates and find a more reliable care option.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <h2 class="section-title">Ideation & Iteration</h2>
+        <p class="section-intro">
+          Our original idea focused on healthcare access during a disaster, but through feedback we realized we needed to make the disaster context clearer and focus more specifically on people whose medical needs fall between routine care and emergency care.
+        </p>
+
+        <div class="grid">
+          <div class="card">
+            <h3>Early Direction</h3>
+            <p class="muted">
+              We started with the idea of helping users find open clinics when normal systems are disrupted.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Feedback</h3>
+            <p class="muted">
+              We refined the concept to emphasize the medical gray zone, community engagement, transparency, and privacy-aware crowdsourcing.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Final Focus</h3>
+            <p class="muted">
+              The final product centers on trustworthy, real-time clinic information during any disaster, not only one specific type of crisis.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Community Angle</h3>
+            <p class="muted">
+              We chose a community-based model because people are more likely to contribute useful updates when the tool is built around a group they trust.
+            </p>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <a class="button primary" href="lions-prototype.html" target="_blank">Open Prototype</a>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <h2 class="section-title">Video Pitch</h2>
+        <p class="section-intro">
+          This short video introduces the Lions-Med concept, the problem it solves, and how the app could help users navigate care during a disaster.
+        </p>
+
+        <video controls>
+          <source src="Lions-Med.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Daphne Tsai. Built with HTML/CSS and hosted on GitHub Pages.</p>
+  </footer>
 </body>
 </html>
