@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Technology Decision Tree</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --accent-red: #dc2626;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        #quiz-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .question-node {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .question-node.active {
+            display: block;
+        }
+
+        h2 { margin-top: 0; font-size: 1.25rem; color: var(--primary); }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+
+        button {
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background: #f1f5f9;
+            border-color: var(--primary);
+        }
+
+        .result-card {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .color_red {
+            color: var(--accent-red);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .extra-info {
+            background: #eff6ff;
+            padding: 1rem;
+            border-left: 4px solid var(--primary);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reset-btn {
+            margin-top: 2rem;
+            background: var(--text);
+            color: white;
+            border: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <div id="quiz-content"></div>
+</div>
+
+<script>
+    const tree = {
+        // --- BIG TREE ---
+        start: {
+            question: "What is the end goal of your analysis?",
+            options: [
+                { text: "Publishing the dataset", next: "anonymization_1" },
+                { text: "Aggregate results/trends", next: "aggregate_accuracy" },
+                { text: "Binary output", next: "binary_choice" },
+                { text: "Secure communication of a sensitive message", next: "crypto_1" }
+            ]
+        },
+        aggregate_accuracy: {
+            question: "What is your desired level of accuracy?",
+            options: [
+                { text: "100%", next: "crypto_analysis_math" }, // Leads to MPC in Crypto tree
+                { text: "Some noise is allowable", next: "dp_1" }
+            ]
+        },
+        binary_choice: {
+            question: "Do you want rigorous mathematical guarantees or hardware-level privacy?",
+            options: [
+                { text: "Math Guarantees", next: "dp_1" },
+                { text: "Hardware-level Privacy", next: "tee_result" }
+            ]
+        },
+
+        // --- DP TREE ---
+        dp_1: {
+            question: "Is there a trusted central party that can securely collect and store raw data?",
+            options: [
+                { text: "Yes", next: "dp_central_output" },
+                { text: "No", next: "dp_local_reporting" },
+                { text: "Unsure", next: "dp_unsure" }
+            ]
+        },
+        dp_unsure: {
+            question: "Is the data being collected from user devices (e.g. phones, browsers)?",
+            options: [
+                { text: "Yes (Local DP)", next: "dp_local_reporting" },
+                { text: "No (Central DP)", next: "dp_central_output" }
+            ]
+        },
+        dp_central_output: {
+            question: "Is your output numeric (e.g., counts, sums, averages)?",
+            options: [
+                { text: "Yes", next: "laplace_result" },
+                { text: "No", next: "dp_ranking" }
+            ]
+        },
+        dp_ranking: {
+            question: "Are you selecting or ranking an option (e.g., top feature)?",
+            options: [
+                { text: "Yes", next: "exponential_result" },
+                { text: "No", next: "dp_complex_result" }
+            ]
+        },
+        dp_local_reporting: {
+            question: "Are users directly reporting sensitive information from their own device?",
+            options: [
+                { text: "Yes", next: "randomized_response_result" },
+                { text: "No", next: "local_dp_inappropriate" }
+            ]
+        },
+
+        // --- CRYPTOGRAPHY TREE ---
+        crypto_1: {
+            question: "Do you need to perform analysis on data held by multiple parties OR encryption for communication?",
+            options: [
+                { text: "Analysis", next: "crypto_analysis_math" },
+                { text: "Communication", next: "crypto_comm_channel" }
+            ]
+        },
+        crypto_analysis_math: {
+            question: "Is the math limited to linear operations (e.g., sum or average)?",
+            options: [
+                { text: "Yes", next: "crypto_sabotage" },
+                { text: "No", next: "mpc_heavy_result" }
+            ]
+        },
+        crypto_sabotage: {
+            question: "Are you concerned about participants actively trying to sabotage results or lie?",
+            options: [
+                { text: "Yes", next: "mpc_redundancy_result" },
+                { text: "No", next: "additive_sharing_result" }
+            ]
+        },
+        crypto_comm_channel: {
+            question: "Do you have a pre-existing secure channel to share a secret key?",
+            options: [
+                { text: "Yes", next: "crypto_fixed_length" },
+                { text: "No", next: "pki_rsa_result" }
+            ]
+        },
+        crypto_fixed_length: {
+            question: "Is the message length fixed and do you require perfect secrecy?",
+            options: [
+                { text: "Yes", next: "otp_result" },
+                { text: "No", next: "private_key_result" }
+            ]
+        },
+
+        // --- ANONYMIZATION TREE ---
+        anonymization_1: {
+            question: "Is re-identification reasonably likely? (Sparse data, long-tails, unique users)",
+            options: [
+                { text: "Yes", next: "dp_1" },
+                { text: "No", next: "anon_risk_check" }
+            ]
+        },
+        anon_risk_check: {
+            question: "Are the consequences of potential leakage severe / legal concerns?",
+            options: [
+                { text: "Yes", next: "high_risk_anon_result" },
+                { text: "No", next: "anon_sensitive_check" }
+            ]
+        },
+        anon_sensitive_check: {
+            question: "Does the dataset contain sensitive attributes?",
+            options: [
+                { text: "Yes", next: "k_l_diversity_result" },
+                { text: "No", next: "k_anon_result" }
+            ]
+        },
+
+        // --- RESULTS ---
+        laplace_result: {
+            type: "result",
+            title: "Use Laplace Mechanism",
+            content: "Best for numeric outputs in a centralized setting.",
+            extra: "Extra Info: Standard for counts and sums."
+        },
+        exponential_result: {
+            type: "result",
+            title: "Use Exponential Mechanism",
+            content: "Best for non-numeric selection tasks.",
+            extra: "Extra Info: Maintains privacy while picking the most 'useful' item."
+        },
+        randomized_response_result: {
+            type: "result",
+            title: "Use Randomized Response",
+            content: "Users perturb their own data before sending.",
+            extra: "DP helps reduce re-identification risk but does not guarantee full legal compliance (GDPR/HIPAA). Manage your privacy budget (ε) carefully!"
+        },
+        mpc_heavy_result: {
+            type: "result",
+            title: "Advanced/Heavier MPC",
+            content: "Required for non-linear operations. High computational cost.",
+            isPatriotCheck: true
+        },
+        mpc_redundancy_result: {
+            type: "result",
+            title: "MPC with Redundancy",
+            content: "Extra servers check each other to prevent rogue actors.",
+            isPatriotCheck: true
+        },
+        additive_sharing_result: {
+            type: "result",
+            title: "Additive Secret Sharing",
+            content: "Secure against curious adversaries. Not a legal disclosure as shares are indistinguishable.",
+            isPatriotCheck: true
+        },
+        pki_rsa_result: {
+            type: "result",
+            title: "Public Key Infrastructure (RSA)",
+            content: "Vulnerable to data collection under the Patriot Act.",
+            isPatriotCheck: true
+        },
+        otp_result: {
+            type: "result",
+            title: "One-Time Pad (XOR)",
+            content: "Provides perfect secrecy for fixed-length messages.",
+            isPatriotCheck: true
+        },
+        private_key_result: {
+            type: "result",
+            title: "Computational Private-Key Encryption",
+            content: "Determine a policy for backdoor cryptography.",
+            isPatriotCheck: true
+        },
+        tee_result: {
+            type: "result",
+            title: "Use TEEs (Trusted Execution Environments)",
+            content: "Provides hardware-level privacy isolation."
+        },
+        high_risk_anon_result: {
+            type: "result",
+            title: "Complex Anonymization",
+            content: "Apply k-anonymity + l-diversity + Differential Privacy."
+        },
+        k_l_diversity_result: {
+            type: "result",
+            title: "k-Anonymity + l-Diversity",
+            content: "Protects against both identity and attribute disclosure."
+        },
+        k_anon_result: {
+            type: "result",
+            title: "k-Anonymity",
+            content: "Low-risk dataset strategy to protect identity."
+        }
+    };
+
+    function renderNode(nodeId) {
+        const container = document.getElementById('quiz-content');
+        const node = tree[nodeId];
+
+        if (!node) return;
+
+        let html = '';
+
+        if (node.type === 'result') {
+            html = `
+                <div class="result-card">
+                    <h2>Recommended Technology:</h2>
+                    <div class="color_red">${node.title}</div>
+                    <p>${node.content}</p>
+                    ${node.extra ? `<div class="extra-info">${node.extra}</div>` : ''}
+                </div>
+            `;
+            
+            if (node.isPatriotCheck) {
+                html += `
+                    <div class="extra-info" style="border-color: #dc2626; background: #fff5f5;">
+                        <strong>Patriot Act Addendum:</strong><br>
+                        Does your project involve business records subject to Section 215?<br>
+                        <button onclick="alert('Note: Regardless of math, this is subject to the Patriot Act. Plan for compelled peeking.')">Yes</button>
+                        <button onclick="alert('Note: This scheme operates as a political tool for private autonomy.')">No</button>
+                    </div>
+                `;
+            }
+
+            html += `<button class="reset-btn" onclick="renderNode('start')">Restart Quiz</button>`;
+        } else {
+            html = `
+                <div class="question-node active">
+                    <h2>${node.question}</h2>
+                    <div class="options">
+                        ${node.options.map(opt => `
+                            <button onclick="renderNode('${opt.next}')">${opt.text}</button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
+    }
+
+    // Initialize
+    renderNode('start');
+</script>
+
+</body>
+</html>
