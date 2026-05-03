@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lions-Med | Daphne Tsai</title>
   <style>
+    
+    .title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.title-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid #e5e0d8;
+}
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
@@ -176,7 +190,10 @@
   <main>
     <section class="hero container">
       <p class="eyebrow">Healthcare · Product Design · Community Updates</p>
-      <h1>Lions-Med</h1>
+      <div class="title-row">
+        <img src="lions-icon.png" class="title-icon">
+        <h1>Lions-Med</h1>
+      </div>
       <p>
         Developed in collaboration with Yuchen Guo, Aryan Kaul, and Ana Vizitiv.
       </p>
