@@ -6,19 +6,22 @@
   <title>Lions-Med | Daphne Tsai</title>
   <style>
     
- .title-row {
+.title-row {
   display: flex;
-  align-items: center;
-  gap: 1rem; /* controls spacing between title and icon */
+  align-items: center;   /* THIS centers vertically */
+  gap: 1rem;
+}
+
+.title-row h1 {
+  margin: 0;  /* remove default top/bottom spacing */
 }
 
 .title-icon {
   width: 90px;
   height: 90px;
-  border-radius: 22px;
+  border-radius: 20px;
   object-fit: cover;
   border: 1px solid #e5e0d8;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
