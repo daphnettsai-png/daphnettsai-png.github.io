@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AKPsi Social Media | Daphne Tsai</title>
+  <title> Social Media Work | Daphne Tsai</title>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -113,14 +113,29 @@
 
 <body>
   <div class="container">
-    <h1>AKPsi Social Media Work</h1>
+    <h1>Social Media Work</h1>
 
     <p>
-      Created Instagram graphics, carousel posts, and short-form videos focusing on engagement,
-      storytelling, and branding.
+      Created Instagram graphics, flyers, and short-form videos focusing on engagement and branding.
     </p>
 
     <div class="gallery">
+
+      <!-- 🔁 SLIDESHOW POST -->
+      <div class="gallery-item slideshow">
+        <button class="slide-btn prev" onclick="changeSlide(this, -1)">‹</button>
+
+        <img class="slide active" src="post1-1.jpg">
+        <img class="slide" src="post1-2.jpg">
+        <img class="slide" src="post1-3.jpg">
+
+        <button class="slide-btn next" onclick="changeSlide(this, 1)">›</button>
+
+        <div class="caption">
+          <h3>Carousel Post</h3>
+          <p>Multi-slide Instagram post</p>
+        </div>
+      </div>
 
       <!-- 🔁 SLIDESHOW POST -->
       <div class="gallery-item slideshow">
