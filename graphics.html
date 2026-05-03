@@ -13,7 +13,7 @@
       background: #fbfaf7;
       color: #1f2933;
     }
-
+    
     .container {
       width: min(1100px, 90%);
       margin: 0 auto;
@@ -109,9 +109,42 @@
       }
     }
   </style>
+
+  header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(251, 250, 247, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #e5e0d8;
+}
+
+nav {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.nav-links a:hover {
+  color: #7c5cff;
+}
 </head>
 
 <body>
+  <main>
   <div class="container">
     <h1>Social Media Work</h1>
 
@@ -197,5 +230,19 @@
       slides[newIndex].classList.add("active");
     }
   </script>
+    </div>
+</main>
 </body>
+
+<header>
+  <nav class="container">
+    <a href="index.html" class="logo">Daphne Tsai</a>
+    <div class="nav-links">
+      <a href="index.html#about">About</a>
+      <a href="index.html#projects">Projects</a>
+      <a href="index.html#experience">Experience</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+  </nav>
+</header>  
 </html>
