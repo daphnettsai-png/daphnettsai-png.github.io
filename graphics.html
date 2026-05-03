@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> Social Media Work | Daphne Tsai</title>
+  <title>Social Media Work | Daphne Tsai</title>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -13,10 +13,45 @@
       background: #fbfaf7;
       color: #1f2933;
     }
-    
+
+    a { color: inherit; text-decoration: none; }
+
     .container {
       width: min(1100px, 90%);
       margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(251, 250, 247, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e5e0d8;
+    }
+
+    nav {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover { color: #7c5cff; }
+
+    main .container {
       padding: 4rem 0;
     }
 
@@ -70,6 +105,7 @@
       height: 35px;
       border-radius: 50%;
       cursor: pointer;
+      z-index: 2;
     }
 
     .prev { left: 10px; }
@@ -86,6 +122,7 @@
 
     .caption p {
       font-size: 0.85rem;
+      margin-bottom: 0;
     }
 
     .button {
@@ -98,118 +135,90 @@
     }
 
     @media (max-width: 800px) {
-      .gallery {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .gallery { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
     }
 
     @media (max-width: 500px) {
-      .gallery {
-        grid-template-columns: 1fr;
-      }
+      .gallery { grid-template-columns: 1fr; }
     }
   </style>
-
-  header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(251, 250, 247, 0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid #e5e0d8;
-}
-
-nav {
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo {
-  font-weight: 700;
-  font-size: 1.1rem;
-  letter-spacing: 0.04em;
-}
-
-.nav-links {
-  display: flex;
-  gap: 1.5rem;
-  font-size: 0.95rem;
-}
-
-.nav-links a:hover {
-  color: #7c5cff;
-}
 </head>
 
 <body>
+  <header>
+    <nav class="container">
+      <a href="index.html" class="logo">Daphne Tsai</a>
+      <div class="nav-links">
+        <a href="index.html#about">About</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#experience">Experience</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
+    </nav>
+  </header>
+
   <main>
-  <div class="container">
-    <h1>Social Media Work</h1>
+    <div class="container">
+      <h1>Social Media Work</h1>
 
-    <p>
-      Created Instagram graphics, flyers, and short-form videos focusing on engagement and branding.
-    </p>
+      <p>
+        Created Instagram graphics, flyers, and short-form videos focusing on engagement and branding.
+      </p>
 
-    <div class="gallery">
+      <div class="gallery">
+        <div class="gallery-item slideshow">
+          <button class="slide-btn prev" onclick="changeSlide(this, -1)">‹</button>
 
-      <!-- 🔁 SLIDESHOW POST -->
-      <div class="gallery-item slideshow">
-        <button class="slide-btn prev" onclick="changeSlide(this, -1)">‹</button>
+          <img class="slide active" src="post1-1.jpg">
+          <img class="slide" src="post1-2.jpg">
+          <img class="slide" src="post1-3.jpg">
 
-        <img class="slide active" src="post1-1.jpg">
-        <img class="slide" src="post1-2.jpg">
-        <img class="slide" src="post1-3.jpg">
+          <button class="slide-btn next" onclick="changeSlide(this, 1)">›</button>
 
-        <button class="slide-btn next" onclick="changeSlide(this, 1)">›</button>
+          <div class="caption">
+            <h3>Carousel Post</h3>
+            <p>Multi-slide Instagram post</p>
+          </div>
+        </div>
 
-        <div class="caption">
-          <h3>Carousel Post</h3>
-          <p>Multi-slide Instagram post</p>
+        <div class="gallery-item slideshow">
+          <button class="slide-btn prev" onclick="changeSlide(this, -1)">‹</button>
+
+          <img class="slide active" src="post2-1.jpg">
+          <img class="slide" src="post2-2.jpg">
+          <img class="slide" src="post2-3.jpg">
+
+          <button class="slide-btn next" onclick="changeSlide(this, 1)">›</button>
+
+          <div class="caption">
+            <h3>Carousel Post</h3>
+            <p>Multi-slide Instagram post</p>
+          </div>
+        </div>
+
+        <div class="gallery-item">
+          <img class="slide active" src="design1.jpg">
+          <div class="caption">
+            <h3>Graphic Post</h3>
+            <p>Event promotion</p>
+          </div>
+        </div>
+
+        <div class="gallery-item">
+          <video controls class="slide active">
+            <source src="video1.mp4" type="video/mp4">
+          </video>
+          <div class="caption">
+            <h3>Instagram Reel</h3>
+            <p>Short-form video content</p>
+          </div>
         </div>
       </div>
 
-      <!-- 🔁 SLIDESHOW POST -->
-      <div class="gallery-item slideshow">
-        <button class="slide-btn prev" onclick="changeSlide(this, -1)">‹</button>
-
-        <img class="slide active" src="post1-1.jpg">
-        <img class="slide" src="post1-2.jpg">
-        <img class="slide" src="post1-3.jpg">
-
-        <button class="slide-btn next" onclick="changeSlide(this, 1)">›</button>
-
-        <div class="caption">
-          <h3>Carousel Post</h3>
-          <p>Multi-slide Instagram post</p>
-        </div>
-      </div>
-
-      <!-- 🖼️ SINGLE IMAGE -->
-      <div class="gallery-item">
-        <img class="slide active" src="design1.jpg">
-        <div class="caption">
-          <h3>Graphic Post</h3>
-          <p>Event promotion</p>
-        </div>
-      </div>
-
-      <!-- 🎥 VIDEO -->
-      <div class="gallery-item">
-        <video controls class="slide active">
-          <source src="video1.mp4" type="video/mp4">
-        </video>
-        <div class="caption">
-          <h3>Instagram Reel</h3>
-          <p>Short-form video content</p>
-        </div>
-      </div>
-
+      <a class="button" href="index.html">Back to Portfolio</a>
     </div>
-
-    <a class="button" href="index.html">Back to Portfolio</a>
-  </div>
+  </main>
 
   <script>
     function changeSlide(button, direction) {
@@ -230,19 +239,5 @@ nav {
       slides[newIndex].classList.add("active");
     }
   </script>
-    </div>
-</main>
 </body>
-
-<header>
-  <nav class="container">
-    <a href="index.html" class="logo">Daphne Tsai</a>
-    <div class="nav-links">
-      <a href="index.html#about">About</a>
-      <a href="index.html#projects">Projects</a>
-      <a href="index.html#experience">Experience</a>
-      <a href="index.html#contact">Contact</a>
-    </div>
-  </nav>
-</header>  
 </html>
