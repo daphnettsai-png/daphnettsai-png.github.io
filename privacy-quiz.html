@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Technology Decision Tree</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --accent-red: #dc2626;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        #quiz-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%;
+        }
+
+        h2 { margin-top: 0; font-size: 1.25rem; color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 1.5rem;
+        }
+
+        button {
+            padding: 14px 18px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        button:hover {
+            background: #f1f5f9;
+            border-color: var(--primary);
+        }
+
+        .result-card {
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .summary-item {
+            background: #eff6ff;
+            padding: 12px;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .reset-btn {
+            margin-top: 2rem;
+            background: var(--text);
+            color: white !important;
+            border: none;
+            text-align: center;
+            width: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <div id="quiz-content"></div>
+</div>
+
+<script>
+    let dpResults = [];
+
+    const tree = {
+        start: {
+            question: "What is the end goal of your analysis?",
+            options: [
+                { text: "Publishing the dataset", next: "anonymization_1" },
+                { text: "Binary output", next: "binary_choice" },
+                { text: "Secure communication of a sensitive message", next: "crypto_1" },
+                { text: "Aggregate results/trends", next: "aggregate_accuracy" }
+            ]
+        },
+        binary_choice: {
+            question: "Do you want rigorous mathematical guarantees or hardware-level privacy?",
+            options: [
+                { text: "Hardware", next: "tee_result" },
+                { text: "Math", next: "dp_1" }
+            ]
+        },
+        aggregate_accuracy: {
+            question: "What is your desired level of accuracy?",
+            options: [
+                { text: "Some noise is allowable", next: "dp_1" },
+                { text: "100% accurate", next: "crypto_1" }
+            ]
+        },
+        anonymization_1: {
+            question: "Is re-identification reasonably likely? (Sparse, long-tailed, unique users)",
+            options: [
+                { text: "Yes", next: "dp_1" },
+                { text: "No", next: "anon_risk_check" }
+            ]
+        },
+        anon_risk_check: {
+            question: "Are the consequences of potential leakage severe / legal concerns?",
+            options: [
+                { text: "Yes", next: "anon_complex_result" },
+                { text: "No", next: "anon_low_risk" }
+            ]
+        },
+        anon_low_risk: {
+            question: "Does the dataset contain sensitive attributes?",
+            options: [
+                { text: "Yes", next: "anon_k_l_result" },
+                { text: "No", next: "anon_k_only_result" }
+            ]
+        },
+        dp_1: {
+            question: "Is there a trusted central party that can securely collect and store raw data?",
+            options: [
+                { text: "Yes", next: "dp_central" },
+                { text: "No", next: "dp_local" },
+                { text: "Unsure", next: "dp_unsure" }
+            ]
+        },
+        dp_unsure: {
+            question: "Is the data being collected from user devices (phones, browsers)?",
+            options: [
+                { text: "Yes", next: "dp_local" },
+                { text: "No", next: "dp_central" }
+            ]
+        },
+        dp_central: {
+            question: "Is your output numeric (e.g., counts, sums, averages)?",
+            options: [
+                { text: "Yes", next: "laplace_result" },
+                { text: "No", next: "dp_selection" }
+            ]
+        },
+        dp_selection: {
+            question: "Are you selecting or ranking an option (e.g., most popular item)?",
+            options: [
+                { text: "Yes", next: "exponential_result" },
+                { text: "No", next: "dp_too_complex" }
+            ]
+        },
+        dp_local: {
+            question: "Are users directly reporting sensitive information from their own device?",
+            options: [
+                { text: "Yes", next: "randomized_response_result" },
+                { text: "No", next: "dp_local_warning" }
+            ]
+        },
+        dp_deep_1: {
+            question: "Does your project involve data subject to privacy regulations (GDPR, HIPAA, CCPA)?",
+            options: [
+                { text: "Yes", next: "dp_deep_2", result: "DP helps reduce the risk of re-identification but does not guarantee full legal compliance (GDPR/HIPAA)." },
+                { text: "No", next: "dp_deep_2", result: "DP still provides strong technical guarantees against data leakage and inference attacks." }
+            ]
+        },
+        dp_deep_2: {
+            question: "Are you working with small populations or rare subgroups?",
+            options: [
+                { text: "Yes", next: "dp_deep_3", result: "Noise may significantly distort results. Refer to documentation for aid in selecting ε." },
+                { text: "No", next: "dp_deep_3", result: "DP performs more reliably on large datasets." }
+            ]
+        },
+        dp_deep_3: {
+            question: "Will your system run repeated queries or analyses over time?",
+            options: [
+                { text: "Yes", next: "dp_deep_4", result: "You must manage a privacy budget, as each query consumes part of the total privacy guarantee." },
+                { text: "No", next: "dp_deep_4", result: "A single DP release is simpler and avoids budget management complexity." }
+            ]
+        },
+        dp_deep_4: {
+            question: "Do you require highly accurate results (e.g., policy, funding)?",
+            options: [
+                { text: "Yes", next: "dp_deep_5", result: "Increase ε for better accuracy (weaker privacy). Refer to supporting documentation." },
+                { text: "No", next: "dp_deep_5", result: "Decrease ε for stronger privacy (lower accuracy). Refer to supporting documentation." }
+            ]
+        },
+        dp_deep_5: {
+            question: "Does your project involve training machine learning models on sensitive data?",
+            options: [
+                { text: "Yes", next: "dp_final_summary", result: "Use differentially private training methods to limit memorization and reduce leakage risk." },
+                { text: "No", next: "dp_final_summary", result: "Standard DP mechanisms for aggregate queries may be sufficient." }
+            ]
+        },
+        crypto_1: {
+            question: "Do you need to perform analysis on data held by multiple parties OR encryption for communication?",
+            options: [
+                { text: "Communication", next: "crypto_comm" },
+                { text: "Analysis", next: "crypto_analysis" }
+            ]
+        },
+        crypto_comm: {
+            question: "Do you have a pre-existing secure channel to share a secret key?",
+            options: [
+                { text: "Yes", next: "crypto_otp_check" },
+                { text: "No", next: "pki_result" }
+            ]
+        },
+        crypto_otp_check: {
+            question: "Is the message length fixed and do you require perfect secrecy?",
+            options: [
+                { text: "Yes", next: "otp_result" },
+                { text: "No", next: "private_key_result" }
+            ]
+        },
+        crypto_analysis: {
+            question: "Is the math limited to linear operations (sum or average)?",
+            options: [
+                { text: "Yes", next: "crypto_sabotage" },
+                { text: "No", next: "mpc_heavy_result" }
+            ]
+        },
+        crypto_sabotage: {
+            question: "Are you concerned about participants actively trying to sabotage results?",
+            options: [
+                { text: "Yes", next: "mpc_redundancy_result" },
+                { text: "No", next: "additive_sharing_result" }
+            ]
+        },
+        addendum: {
+            question: "Does your project involve business records or national security data subject to Section 215?",
+            options: [
+                { text: "Yes", next: "patriot_yes" },
+                { text: "No", next: "patriot_no" }
+            ]
+        },
+        tee_result: { type: "result", title: "TEEs", content: "Use Trusted Execution Environments." },
+        laplace_result: { type: "result", title: "Laplace Mechanism", isDP: true },
+        exponential_result: { type: "result", title: "Exponential Mechanism", isDP: true },
+        randomized_response_result: { type: "result", title: "Randomized Response", isDP: true },
+        dp_too_complex: { type: "result", title: "Output too complex for standard DP", isDP: true },
+        dp_local_warning: { type: "result", title: "Local DP Warning: Consider Alternative", isDP: true },
+        anon_complex_result: { type: "result", title: "k-Anonymity + l-Diversity + DP", content: "Highest level of dataset protection." },
+        anon_k_l_result: { type: "result", title: "k-Anonymity + l-Diversity", content: "Identity + Attribute protection." },
+        anon_k_only_result: { type: "result", title: "k-Anonymity", content: "Standard identity protection." },
+        pki_result: { type: "result", title: "Public Key Infrastructure (RSA)", isCrypto: true },
+        otp_result: { type: "result", title: "One-Time Pad (XOR)", isCrypto: true },
+        private_key_result: { type: "result", title: "Computational Private-Key Encryption", isCrypto: true },
+        mpc_heavy_result: { type: "result", title: "Advanced/Heavier MPC", isCrypto: true },
+        mpc_redundancy_result: { type: "result", title: "MPC with Redundancy", isCrypto: true },
+        additive_sharing_result: { type: "result", title: "Additive Secret Sharing", isCrypto: true },
+        patriot_yes: { type: "result", title: "Legal Subjectivity", content: "Plan for potential compelled peeking by law enforcement." },
+        patriot_no: { type: "result", title: "Private Autonomy", content: "Scheme serves as a tool for private autonomy." }
+    };
+
+    function renderNode(nodeId, selectedResult = null) {
+        if (nodeId === 'start') dpResults = [];
+        if (selectedResult) dpResults.push(selectedResult);
+
+        const container = document.getElementById('quiz-content');
+        const node = tree[nodeId];
+
+        if (nodeId === 'dp_final_summary') {
+            container.innerHTML = `
+                <h2>Differential Privacy: Final Assessment</h2>
+                <div class="result-card">
+                    ${dpResults.map(res => `<div class="summary-item">${res}</div>`).join('')}
+                </div>
+                <button class="reset-btn" onclick="renderNode('start')">Restart From Beginning</button>
+            `;
+            return;
+        }
+
+        let html = `<h2>${node.question || "Recommendation"}</h2>`;
+
+        if (node.type === "result") {
+            html = `<div class="result-card">
+                        <span style="color:var(--accent-red); font-weight:bold; font-size:1.2rem;">${node.title}</span>
+                        <p>${node.content || ""}</p>
+                    </div>`;
+            
+            if (node.isCrypto) {
+                html += `<button class="reset-btn" onclick="renderNode('addendum')">Proceed to Legal Addendum</button>`;
+            } else if (node.isDP) {
+                html += `<button class="reset-btn" style="background:var(--primary)" onclick="renderNode('dp_deep_1')">Proceed to Deep Dive (Assessment)</button>`;
+            }
+        } else {
+            html += `<div class="options">
+                ${node.options.map(opt => `
+                    <button onclick="renderNode('${opt.next}', '${opt.result || ''}')">${opt.text}</button>
+                `).join('')}
+            </div>`;
+        }
+
+        if (nodeId !== 'start' && !node.isDP && !node.isCrypto) {
+            html += `<button class="reset-btn" onclick="renderNode('start')">Restart</button>`;
+        }
+        
+        container.innerHTML = html;
+    }
+
+    renderNode('start');
+</script>
+</body>
+</html>
