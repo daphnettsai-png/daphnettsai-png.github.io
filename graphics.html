@@ -85,16 +85,27 @@
     .slide {
       display: none;
       width: 100%;
-      aspect-ratio: 3 / 4;
+      aspect-ratio: 100%;
       object-fit: cover;
     }
     
     .reel {
-      aspect-ratio: 9 / 16;
+      object-fit: contain;
+      background: black;
     }
     
     .slide.active {
       display: block;
+    }
+
+    .media-frame {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background: #f1eefb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .slide-btn {
@@ -225,15 +236,16 @@
         </div>
 
         <div class="gallery-item">
-          <video controls class="slide active reel">
-            <source src="rush_video.mp4" type="video/mp4">
-          </video>
+          <div class="media-frame">
+            <video controls class="slide active reel">
+              <source src="rush_video.mp4" type="video/mp4">
+            </video>
+          </div>
           <div class="caption">
             <h3>Instagram Reel</h3>
             <p>Rush promotional video designed with Canva and Capcut</p>
           </div>
         </div>
-      </div>
 
       <a class="button" href="index.html">Back to Portfolio</a>
     </div>
